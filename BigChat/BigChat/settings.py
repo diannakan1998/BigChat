@@ -20,7 +20,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'g4^(4xz#yxm)!_302li6tsyugw-+y1wd4fj%x(9us558mv2@4-'
+secretKey = open("secret_key.json", "r")
+SECRET_KEY = json.load(secretKey)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -97,26 +98,9 @@ WSGI_APPLICATION = 'BigChat.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
-    # 'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
-    
-    'default': {
-         'ENGINE': 'django.db.backends.postgresql',
-         'NAME': 'bigchat',
-         'HOST': 'chatmate.postgres.database.azure.com',
-         'USER': 'bigchat@chatmate',
-         'PASSWORD': 'ChatMate222!',
-         # Only add if using PSQL on azure
-         'OPTIONS': {
-             'sslmode' : 'require'
-         }
-     }
-
-    #  dbname='{your_database}' user='BigChat@chatmate' host='chatmate.postgres.database.azure.com’ password='{your_password}' port='5432' sslmode=true'
-}
+#WARNING Make sure database credentials are secure/hidden
+dbCred = open("databaseCred.json", "r")
+DATABASES = json.load(dbCred)
 
 
 # Password validation
