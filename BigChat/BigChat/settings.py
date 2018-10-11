@@ -16,8 +16,6 @@ import json
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-print (os.getcwd())
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -39,8 +37,45 @@ filePath = os.path.join(currRelPath, "databaseCred.json")
 dbCred = open(filePath, "r")
 DATABASES = json.load(dbCred)
 
+
+# SECURITY WARNING SECRET KEYS for Social Authentication
+# Facebook
+filePath = os.path.join(currRelPath, "facebook_key.json")
+secretKey = open(filePath, "r")
+jsonObj = json.load(secretKey)
+
+SOCIAL_AUTH_FACEBOOK_KEY = jsonObj["KEY"]
+SOCIAL_AUTH_FACEBOOK_SECRET = jsonObj["SECRET"]
+
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+    'fields': 'id, name, email'
+}
+
+
+# Google
+filePath = os.path.join(currRelPath, "facebook_key.json")
+secretKey = open(filePath, "r")
+jsonObj = json.load(secretKey)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = jsonObj["KEY"]
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = jsonObj["SECRET"]
+
+
 ALLOWED_HOSTS = []
 
+# Django-rest-framework-oauth2
+AUTHENTICATION_BACKENDS = (
+   'rest_framework_social_oauth2.backends.DjangoOAuth2',
+   'django.contrib.auth.backends.ModelBackend',
+)
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
+        'rest_framework_social_oauth2.authentication.SocialAuthentication',
+    ),
+}
 
 # Application definition
 
@@ -53,15 +88,21 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
+    #django-rest-framework-oauth2
+    'oauth2_provider',
+    'social_django',
+    'rest_framework_social_oauth2',
 
-    # Providers - Find more on allauth documentation
-    # https://django-allauth.readthedocs.io/en/latest/installation.html
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.github',
+    ## Django AllAuth
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
+
+    # # Providers - Find more on allauth documentation
+    # # https://django-allauth.readthedocs.io/en/latest/installation.html
+    # 'allauth.socialaccount.providers.facebook',
+    # 'allauth.socialaccount.providers.google',
+    # 'allauth.socialaccount.providers.github',
 
 ]
 
@@ -91,6 +132,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -100,10 +143,27 @@ AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
 
+    # Django-rest-framework-social-oauth2
+    # Facebook OAuth2
+    'social_core.backends.facebook.FacebookAppOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+
+    # Google Auth
+    'social_core.backends.google.GoogleOpenId',
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.google.GoogleOAuth',
+
+    # django-rest-framework-social-oauth2
+    'rest_framework_social_oauth2.backends.DjangoOAuth2',
+
+    # Django-rest-framework-social-oauth2
+
     # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
+    # 'allauth.account.auth_backends.AuthenticationBackend',
 
 )
+
+
 
 WSGI_APPLICATION = 'BigChat.wsgi.application'
 
