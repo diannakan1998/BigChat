@@ -11,20 +11,33 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+print (os.getcwd())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-secretKey = open("secret_key.json", "r")
-SECRET_KEY = json.load(secretKey)
+currRelPath = os.path.join(os.getcwd(), "BigChat")
+filePath = os.path.join(currRelPath, "secret_key.json")
+secretKey = open(filePath, "r")
+jsonObj = json.load(secretKey)
+SECRET_KEY = jsonObj["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+# Database
+# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+
+# SECURITY WARNING Make sure database credentials are secure/hidden
+filePath = os.path.join(currRelPath, "databaseCred.json")
+dbCred = open(filePath, "r")
+DATABASES = json.load(dbCred)
 
 ALLOWED_HOSTS = []
 
@@ -93,14 +106,6 @@ AUTHENTICATION_BACKENDS = (
 )
 
 WSGI_APPLICATION = 'BigChat.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-#WARNING Make sure database credentials are secure/hidden
-dbCred = open("databaseCred.json", "r")
-DATABASES = json.load(dbCred)
 
 
 # Password validation
