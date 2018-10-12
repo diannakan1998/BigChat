@@ -20,25 +20,26 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 
+
 ALLOWED_HOSTS = []
 
-# SECURITY WARNING: keep the secret key used in production secret!
-currRelPath = os.path.join(os.getcwd(), "BigChat")
-filePath = os.path.join(currRelPath, "secret_key.json")
-secretKey = open(filePath, "r")
-jsonObj = json.load(secretKey)
-SECRET_KEY = jsonObj["SECRET_KEY"]
+# # SECURITY WARNING: keep the secret key used in production secret!
+# currRelPath = os.path.join(os.getcwd(), "BigChat")
+# filePath = os.path.join(currRelPath, "secret_key.json")
+# secretKey = open(filePath, "r")
+# jsonObj = json.load(secretKey)
+# SECRET_KEY = jsonObj["SECRET_KEY"]
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = True
 
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+# # Database
+# # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-# SECURITY WARNING Make sure database credentials are secure/hidden
-filePath = os.path.join(currRelPath, "databaseCred.json")
-dbCred = open(filePath, "r")
-DATABASES = json.load(dbCred)
+# # SECURITY WARNING Make sure database credentials are secure/hidden
+# filePath = os.path.join(currRelPath, "databaseCred.json")
+# dbCred = open(filePath, "r")
+# DATABASES = json.load(dbCred)
 
 # Application definition
 
