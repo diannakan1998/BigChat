@@ -40,26 +40,26 @@ DATABASES = json.load(dbCred)
 
 # SECURITY WARNING SECRET KEYS for Social Authentication
 # Facebook
-filePath = os.path.join(currRelPath, "facebook_key.json")
-secretKey = open(filePath, "r")
-jsonObj = json.load(secretKey)
+# filePath = os.path.join(currRelPath, "facebook_key.json")
+# secretKey = open(filePath, "r")
+# jsonObj = json.load(secretKey)
 
-SOCIAL_AUTH_FACEBOOK_KEY = jsonObj["KEY"]
-SOCIAL_AUTH_FACEBOOK_SECRET = jsonObj["SECRET"]
+# SOCIAL_AUTH_FACEBOOK_KEY = jsonObj["KEY"]
+# SOCIAL_AUTH_FACEBOOK_SECRET = jsonObj["SECRET"]
 
-SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-    'fields': 'id, name, email'
-}
+# SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+# SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+#     'fields': 'id, name, email'
+# }
 
 
 # Google
-filePath = os.path.join(currRelPath, "facebook_key.json")
-secretKey = open(filePath, "r")
-jsonObj = json.load(secretKey)
+# filePath = os.path.join(currRelPath, "facebook_key.json")
+# secretKey = open(filePath, "r")
+# jsonObj = json.load(secretKey)
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = jsonObj["KEY"]
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = jsonObj["SECRET"]
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = jsonObj["KEY"]
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = jsonObj["SECRET"]
 
 
 ALLOWED_HOSTS = []
