@@ -38,8 +38,34 @@ filePath = os.path.join(currRelPath, "databaseCred.json")
 dbCred = open(filePath, "r")
 DATABASES = json.load(dbCred)
 
+# filePath = os.path.join(currRelPath, "facebook_key.json")
+# fbKey = open(filePath, "r")
+# jsonObj = json.load(fbKey)
+# SOCIAL_AUTH_FACEBOOK_KEY = fbKey["KEY"]
+# SOCIAL_AUTH_FACEBOOK_SECRET = fbKey["SECRET"]
+# SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+
+# filePath = os.path.join(currRelPath, "google_key.json")
+# googleKey = open(filePath, "r")
+# jsonObj = json.load(googleKey)
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = googleKey["KEY"]
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = googleKey["SECRET"]
+
+
 ALLOWED_HOSTS = []
 
+
+# AUTHENTICATION_BACKENDS = (
+
+#     'social_core.backends.google.GoogleOAuth2',
+#     'social_core.backends.facebook.FacebookOAuth2',
+
+#     'django.contrib.auth.backends.ModelBackend',
+# )
+
+
+# Option for PostgreSQL to store the extracted extra_data
+# SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 
 # Application definition
 
@@ -50,6 +76,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # # social auth
+    # 'social_django',
 ]
 
 MIDDLEWARE = [
