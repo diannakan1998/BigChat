@@ -10,11 +10,13 @@ from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
 
 from . import models
+from models import Users
 
 def index( request ):
     return HttpResponse( "POST" )
 
 class Authenticate( View ):
+
 
     name = request.GET.get("name")
     email = request.GET.get("email")
@@ -22,6 +24,18 @@ class Authenticate( View ):
     app_id = request.GET.get("app_id")
     token = request.GET.get("token")
     authType = request.GET.get("authType")
+
+
+    # Adds Users...
+    user = Users(email=email)
+    user.save()
+
+    # Get Users...
+    user = Users(email=email)
+    user.objects
+
+    # Get all Users...
+    Users.objects.all
 
     def get( self, request ):
          return auth(name, email, user_id, app_id, token, authType)
