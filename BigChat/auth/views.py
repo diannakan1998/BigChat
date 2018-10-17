@@ -16,47 +16,84 @@ def index( request ):
 
 class Authenticate( View ):
 
-    def get( self, request, user_id=None, token=None, authType=None ):
-         app_id = request.GET.get("app_id")
-         user_id = request.GET.get("user_id")
-         token = request.GET.get("token")
-         authType = request.GET.get("authType")
-         return auth(app_id, user_id, token, authType)
+    name = request.GET.get("name")
+    email = request.GET.get("email")
+    user_id = request.GET.get("user_id")
+    app_id = request.GET.get("app_id")
+    token = request.GET.get("token")
+    authType = request.GET.get("authType")
 
-    def post( self, request, user_id=None, token=None, authType=None ):
-         app_id = request.GET.get("app_id")
-         user_id = request.GET.get("user_id")
-         token = request.GET.get("token")
-         authType = request.GET.get("authType")
-         return auth(app_id, user_id, token, authType)
+    def get( self, request ):
+         return auth(name, email, user_id, app_id, token, authType)
+
+    def post( self, request):
+         return auth(name, email, user_id, app_id, token, authType)
 
 
-def auth(app_id, user_id, token, authType):
+def auth(name, email, user_id, app_id, token, authType):
 
-         print (user_id)
-         print (token)
-         print (authType)
+         if name is None:
+            return JsonResponse( { 'error' : 'Cannot process with no name' } )
 
-         if token is None:
-            return JsonResponse( { 'errors' : { 'token' : 'cannot GET with no token' } } )
+         if email is None:
+            return JsonResponse( { 'error' : 'Cannot process with no email' } )
 
-         if authType is None:
-            return JsonResponse( { 'errors' : { 'authType' : 'cannot POST with no authType' } } )
-            
          if app_id is None:
-            return JsonResponse( { 'errors' : { 'app_id' : 'cannot POST with no app_id' } } )
+            return JsonResponse( { 'error' : 'Cannot process with no app_id' } )
 
          if user_id is None:
-            return JsonResponse( { 'errors' : { 'user_id' : 'cannot POST with no user_id' } } )
+            return JsonResponse( { 'error' : 'Cannot process with no user_id' } )
+
+         if token is None:
+            return JsonResponse( { 'error' : 'Cannot process with no token' } )
+
+         if authType is None:
+            return JsonResponse( { 'error' : 'Cannot process with no authType' } )
+
+         print (name)
+         print (email)
+         print (user_id)
+         print (app_id)
+         print (token)
+         print (authType)
 
          if authType == "google":
              url= "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token="
          elif authType == "facebook":
              url = "https://graph.facebook.com/me?access_token="
          else:
-              return HttpResponse( "Authenticate GET - Invalid Authentication Type." )
+              return JsonResponse( { 'error' : "Authenticate GET - Invalid Authentication Type." } )
 
          url = url + token
          req = requests.post(url)
 
+         print (req)
+
          return HttpResponse(req, "application/json")
+         
+
+def checkForNewUser(email, user_id, token):
+
+    user_exists = findUser(email)
+
+    if user_exists:
+        updateToken(email, user_id, token)
+    else:
+        addUser(email, user_id, token)
+
+
+
+def findUser(email):
+    # TODO: implement
+
+    return False
+
+
+def updateToken(email, user_id, token):
+    # TODO: implement
+
+
+def addUser(email, user_id, token):
+    # TODO: implement
+
+
