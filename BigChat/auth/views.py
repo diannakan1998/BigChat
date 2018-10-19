@@ -1,10 +1,9 @@
 from django.shortcuts import render
 
 # Create your views here.
-import requests
-import json
+import requests, json, uuid
 
-
+from django.db import IntegrityError
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
@@ -133,8 +132,8 @@ def auth(name, email, user_id, app_id, token, authType):
              f = open('google_key.json')
              googleKey = json.load(f)
 
-             if 'issued_to' in jsonReq and 'email' in jsonReq and 'user_id' in jsonReq:
-                 if jsonReq['issued_to'] == googleKey['KEY'] and jsonReq['email'] == email and user_id == jsonReq['user_id']:
+             if 'issued_to' in jsonReq and 'email' in jsonReq:
+                 if jsonReq['issued_to'] == googleKey['KEY'] and jsonReq['email'] == email:
                      return {"success": "BigChat true"}
                  else:
                      return {"error": "BigChat false"}
@@ -172,7 +171,7 @@ def auth(name, email, user_id, app_id, token, authType):
              print(jsonReq)
 
              # TODO: Remove
-             #  return {"success": "BigChat true"}
+            #  return {"success": "BigChat true"}
 
              if 'error' in jsonReq:
                  return {"error": jsonReq['error']['message'] }
@@ -186,8 +185,8 @@ def auth(name, email, user_id, app_id, token, authType):
              facebookKey = json.load(f)
              jsonReq.email = jsonReq.email.replace("\u0040", "@")
 
-             if 'id' in jsonReq and 'id' in jsonReq_app_id and 'KEY' in facebookKey and 'email' in jsonReq:
-                 if jsonReq_app_id['id'] == facebookKey['KEY']and jsonReq['email'] == email and user_id == jsonReq['id']:
+             if 'id' in jsonReq_app_id and 'KEY' in facebookKey and 'email' in jsonReq:
+                 if jsonReq_app_id['id'] == facebookKey['KEY']and jsonReq['email'] == email:
                      return {"success": "BigChat true"}
                  else:
                      return {"error": "BigChat false"}
@@ -232,9 +231,13 @@ def findUser(email, user_id, token):
 
     # Get Users...
      try:
-         user = Users.objects.get(email=email, user_id=user_id, token=token)
+         # Throws an expection if zero or more than one found
+         user = Users.objects.get(email=email)
+         user.user_id = user_id
+         user.token = token
+         user.save()
          return True
-     except Exception as exp:
+     except Exception:
          return False
 
 
@@ -247,7 +250,8 @@ def updateToken(name, email, user_id, app_id, old_token, new_token, authType):
          status = auth(name, email, user_id, app_id, new_token, authType)
          if 'error' in status:
              return status
-         user = Users.objects.get(email=email, user_id=user_id, token=old_token)
+         user = Users.objects.get(email=email)
+         user.user_id = user_id
          user.token = new_token
          user.save()
          return {'status': "Succesfully updated token"}
@@ -256,12 +260,17 @@ def updateToken(name, email, user_id, app_id, old_token, new_token, authType):
 
 
 def addUser(email, user_id, token):
-
     # Adds Users...
      try:
-         user = Users(email=email, user_id=user_id, token=token)
+         # TODO: Loop while chatId is unique, need to figure out the exception thrown for nonUnique
+
+         chatId = str(uuid.uuid1())
+         user = Users(email=email, user_id=user_id, token=token, chatId=chatId)
          user.save()
          return {'success': "Succesfully added new user"}
 
+     except IntegrityError: 
+        #  if 'unique constraint' in e.message:
+         return {'error': "Failed to add user. Integrity Error."}
      except Exception:
-         return {'error': "Failed to add user. Atleast one of the parameters is not unique."}
+         return {'error': "Failed to add user."}
