@@ -2,3 +2,4 @@
 /BigChat/BigChat/secret_key.json
 /BigChat/auth/google_key.json
 /BigChat/auth/facebook_key.json
+/BigChat/db.sqlite3

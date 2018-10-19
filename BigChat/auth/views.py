@@ -10,8 +10,9 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
 
-# from auth.models import Users
 
+# from . import models
+from .models import Users
 
 def index(request):
     return HttpResponse("Auth POST")
@@ -21,10 +22,10 @@ class Authenticate(View):
     # model = models.Users
 
     def get(self, request):
-        return processAuthRequest(request)
+        return JsonResponse(processAuthRequest(request))
 
     def post(self, request):
-        return processAuthRequest(request)
+        return JsonResponse(processAuthRequest(request))
 
 
 class updateUserToken(View):
@@ -35,7 +36,7 @@ class updateUserToken(View):
         if status is True:
             return HttpResponse("updateUserToken GET")
         else:
-            return status
+            return JsonResponse(status)
 
     def post(self, request):
 
@@ -43,7 +44,7 @@ class updateUserToken(View):
         if status is True:
             return HttpResponse("updateUserToken GET")
         else:
-            return status
+            return JsonResponse(status)
 
     def put(self, request):
 
@@ -51,21 +52,24 @@ class updateUserToken(View):
         if status is True:
             return HttpResponse("updateUserToken GET")
         else:
-            return status
+            return JsonResponse(status)
 
 
 def processAuthRequest(request):
-    name = request.GET.get("name")
-    email = request.GET.get("email")
-    user_id = request.GET.get("user_id")
-    app_id = request.GET.get("app_id")
-    token = request.GET.get("token")
-    authType = request.GET.get("authType")
+     name = request.GET.get("name")
+     email = request.GET.get("email")
+     user_id = request.GET.get("user_id")
+     app_id = request.GET.get("app_id")
+     token = request.GET.get("token")
+     authType = request.GET.get("authType")
 
-    status = auth(name, email, user_id, app_id, token, authType)
+     status = auth(name, email, user_id, app_id, token, authType)
 
-    if "true" == status.success:
-        checkForNewUser(email, user_id, token)
+     if 'success' in status:
+        return checkForNewUser(email, user_id, token)
+     else:
+         return status
+    
 
 
 def processUpdateTokenRequest(request):
@@ -77,36 +81,45 @@ def processUpdateTokenRequest(request):
     new_token = request.GET.get("new_token")
     authType = request.GET.get("authType")
 
+    if old_token is None:
+         return {'error': 'Cannot process with no old token'}
+    if new_token is None:
+         return {'error': 'Cannot process with no new token'}
+
     return updateToken(name, email, user_id, app_id, old_token, new_token, authType)
 
 
 def auth(name, email, user_id, app_id, token, authType):
 
-        #  if name is None:
-        #     return JsonResponse( { 'error' : 'Cannot process with no name' } )
+     # name can be null, not mandatory...
+     #  if name is None:
+        #  return { 'error' : 'Cannot process with no name' }
 
-        #  if email is None:
-        #     return JsonResponse( { 'error' : 'Cannot process with no email' } )
+     print (name)
+     print (email)
+     print (user_id)
+     print (app_id)
+     print (token)
+     print (authType)
 
-        #  if app_id is None:
-        #     return JsonResponse( { 'error' : 'Cannot process with no app_id' } )
+     if email is None:
+         return { 'error' : 'Cannot process with no email' }
 
-        #  if user_id is None:
-        #     return JsonResponse( { 'error' : 'Cannot process with no user_id' } )
+     # Can be obtained from the access token
+     #  if app_id is None:
+        #  return JsonResponse( { 'error' : 'Cannot process with no app_id' } )
 
-    if token is None:
-        return JsonResponse({'error': 'Cannot process with no token'})
+     if user_id is None:
+         return { 'error' : 'Cannot process with no user_id' }
 
-    if authType is None:
-        return JsonResponse({'error': 'Cannot process with no authType'})
+     if token is None:
+         return {'error': 'Cannot process with no token'}
 
-        #  print (name)
-        #  print (email)
-        #  print (user_id)
-        #  print (app_id)
-        #  print (token)
-        #  print (authType)
-    try:
+     if authType is None:
+         return {'error': 'Cannot process with no authType'}
+
+
+     try:
 
          if authType == "google":
              url = "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=" + token
@@ -114,16 +127,19 @@ def auth(name, email, user_id, app_id, token, authType):
  
              jsonReq = json.loads(req.text)
  
-             if jsonReq.error is Not None or jsonReq.error != "":
+             if 'error' in jsonReq:
                  return jsonReq
 
              f = open('google_key.json')
              googleKey = json.load(f)
 
-             if jsonReq.issued_to == googleKey.KEY and jsonReq.email == email and user_id == jsonReq.user_id:
-                 return JsonResponse({"success": "BigChat true"})
+             if 'issued_to' in jsonReq and 'email' in jsonReq and 'user_id' in jsonReq:
+                 if jsonReq['issued_to'] == googleKey['KEY'] and jsonReq['email'] == email and user_id == jsonReq['user_id']:
+                     return {"success": "BigChat true"}
+                 else:
+                     return {"error": "BigChat false"}
              else:
-                 return JsonResponse({"error": "BigChat false"})
+                 return {"error": "Missing data from Google's API..."}
 
              # Success Message Example
              #  {
@@ -153,17 +169,30 @@ def auth(name, email, user_id, app_id, token, authType):
              jsonReq = json.loads(req.text)
              jsonReq_app_id = json.loads(req_app_id.text)
 
-             if jsonReq.error is Not None or jsonReq.error != "" or jsonReq_app_id.error is Not None or jsonReq_app_id.error != "":
-                 return jsonReq
+             print(jsonReq)
+
+             # TODO: Remove
+             #  return {"success": "BigChat true"}
+
+             if 'error' in jsonReq:
+                 return {"error": jsonReq['error']['message'] }
+
+             if 'error' in jsonReq_app_id:
+                 return {"error": jsonReq_app_id['error']['message'] }
+
+             print(jsonReq)
 
              f = open('facebook_key.json')
              facebookKey = json.load(f)
              jsonReq.email = jsonReq.email.replace("\u0040", "@")
 
-             if jsonReq_app_id.id == facebookKey.KEY and jsonReq.email == email and user_id == jsonReq.id:
-                 return JsonResponse({"success": "true"})
+             if 'id' in jsonReq and 'id' in jsonReq_app_id and 'KEY' in facebookKey and 'email' in jsonReq:
+                 if jsonReq_app_id['id'] == facebookKey['KEY']and jsonReq['email'] == email and user_id == jsonReq['id']:
+                     return {"success": "BigChat true"}
+                 else:
+                     return {"error": "BigChat false"}
              else:
-                 return JsonResponse({"error": "BigChat false"})
+                 return {"error": "Missing data from Facebook's API..."}
 
             # Success Message Examples
             # {
@@ -182,69 +211,57 @@ def auth(name, email, user_id, app_id, token, authType):
             # {"error":{"message":"Expected 1 '.' in the input between the postcard and the payload","type":"OAuthException","code":190,"fbtrace_id":"GYHrVZqj0Ne"}}
 
          else:
-             return JsonResponse({'error': "Authenticate GET - Invalid Authentication Type."})
+             return {'error': "Authenticate GET - Invalid Authentication Type."}
 
-    except Exception:
-        return JsonResponse({"error": "Caught an exception..."})
+     except Exception:
+         return {"error": "Caught an exception..."}
 
 
 # Checks and adds new users
 def checkForNewUser(email, user_id, token):
 
-    user_exists = findUser(email)
+    user_exists = findUser(email, user_id, token)
 
     if user_exists == False:
         return addUser(email, user_id, token)
-
     else:
-        return False
+        return {"success": "user exists", "newUser": "false"}
 
 
-def findUser(email, token):
-    # TODO: implement
-
-    # # Get all Users...
-    # Users.objects.all()
+def findUser(email, user_id, token):
 
     # Get Users...
-    try:
-        #  user = Users(email=email, token=token)
-        #  user = user.objects
-        print("TODO")
-    except Exception:
-        return False
+     try:
+         user = Users.objects.get(email=email, user_id=user_id, token=token)
+         return True
+     except Exception as exp:
+         return False
 
-    if user is None:
-        return False
-    else:
-        return user
+
 
 
 def updateToken(name, email, user_id, app_id, old_token, new_token, authType):
     # TODO: implement
     # Get Users...
-    try:
-        auth(name, email, user_id, app_id, new_token, authType)
-        #  user = Users(email=email, user_id=user_id, token=old_token)
-        #  user = user.objects
-        #  user.token = new_token
-        #  user.save()
-        return JsonResponse({'status': "Succesfully updated token"})
-    except Exception:
-        return JsonResponse({'error': "Failed to updated token"})
+     try:
+         status = auth(name, email, user_id, app_id, new_token, authType)
+         if 'error' in status:
+             return status
+         user = Users.objects.get(email=email, user_id=user_id, token=old_token)
+         user.token = new_token
+         user.save()
+         return {'status': "Succesfully updated token"}
+     except Exception:
+         return {'error': "Failed to update token. User not found."}
 
 
 def addUser(email, user_id, token):
 
-    # TODO: implement
-
     # Adds Users...
-    try:
+     try:
+         user = Users(email=email, user_id=user_id, token=token)
+         user.save()
+         return {'success': "Succesfully added new user"}
 
-        #  user = Users(email=email, user_id=user_id, token=token)
-        #  user.save()
-
-        return JsonResponse({'status': "Succesfully added user"})
-
-    except Exception:
-        return JsonResponse({'error': "Failed to add user"})
+     except Exception:
+         return {'error': "Failed to add user. Atleast one of the parameters is not unique."}
