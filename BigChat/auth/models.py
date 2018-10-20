@@ -13,4 +13,15 @@ class Users(models.Model):
          db_table = 'Users'
 
 
+# ChatList Id... needs to be unique
+def getChatListModel(db_table):
+ class ChatList(models.Model):
+     chat_table_name = models.CharField(max_length=100, unique=True)
+
+     class Meta:
+         db_table = db_table
+
+ return ChatList
+
+
 
