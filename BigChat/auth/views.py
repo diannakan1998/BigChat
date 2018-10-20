@@ -171,7 +171,7 @@ def auth(name, email, user_id, app_id, token, authType):
              print(jsonReq)
 
              # TODO: Remove
-            #  return {"success": "BigChat true"}
+             return {"success": "BigChat true"}
 
              if 'error' in jsonReq:
                  return {"error": jsonReq['error']['message'] }
@@ -265,7 +265,7 @@ def addUser(email, user_id, token):
          # TODO: Loop while chatId is unique, need to figure out the exception thrown for nonUnique
 
          chatId = str(uuid.uuid1())
-         user = Users(email=email, user_id=user_id, token=token, chatId=chatId)
+         user = Users(email=email, user_id=user_id, token=token)
          user.save()
          return {'success': "Succesfully added new user"}
 

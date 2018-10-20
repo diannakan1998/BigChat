@@ -35,11 +35,11 @@ class MessageHistory(View):
         token = requests.GET.get('token')
         try: 
             user = Users.objects.get(token=token)
-        if chatId in user.chat_list_id:
-            chat = chatModel(chatId)
-            return serializers.serialize('json', chat.objects.raw('select * from %s order by date_added ASC', [chatId]))
-        else:
-            return JsonResponse({'error' : 'no chat error'})
+            if chatId in user.chat_list_id:
+                chat = chatModel(chatId)
+                return serializers.serialize('json', chat.objects.raw('select * from %s order by date_added ASC', [chatId]))
+            else:
+                return JsonResponse({'error' : 'no chat error'})
         except Exception:
             return JsonResponse({'error' : 'chat error'})
 
@@ -51,12 +51,12 @@ class MessageHistory(View):
         email = requests.GET.get('email')
         try: 
             user = Users.objects.get(token=token)
-        if chatId in user.chat_list_id:
-            chat = chatModel(chatId)
-            chat.objects.raw('insert into %s (user_email, message, message_type, date_added, date_modified) VALUES(%s, %s, %d, NOW(), NOW())', [chatId], [email], [message], [messageType])
-            return JsonResponse({'success' : 'no error'})
-        else:
-            return JsonResponse({'error' : 'no chat error'})
+            if chatId in user.chat_list_id:
+                chat = chatModel(chatId)
+                chat.objects.raw('insert into %s (user_email, message, message_type, date_added, date_modified) VALUES(%s, %s, %d, NOW(), NOW())', [chatId], [email], [message], [messageType])
+                return JsonResponse({'success' : 'no error'})
+            else:
+                return JsonResponse({'error' : 'no chat error'})
         except Exception:
             return JsonResponse({'error' : 'chat error'})
 

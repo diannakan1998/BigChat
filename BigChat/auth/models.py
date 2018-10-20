@@ -14,6 +14,16 @@ class Users(models.Model):
          db_table = 'Users'
 
 
+
+# class chatTable(models.Model):
+#      chatId = models.AutoField()
+#      memberIds = ArrayField(models.IntegerField(), size=None, null=True)
+#      date_added = models.DateTimeField()
+#      date_modified = models.DateTimeField()
+
+#      class Meta:
+#          db_table = 'chatTable'
+
 # ChatList Id... needs to be unique
 # def getChatListModel(db_table):
 #  class ChatList(models.Model):

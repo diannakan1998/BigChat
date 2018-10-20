@@ -37,15 +37,15 @@ DEBUG = True
 # For production...
 filePath = os.path.join(currRelPath, "databaseCred.json")
 dbCred = open(filePath, "r")
-# DATABASES = json.load(dbCred)
+DATABASES = json.load(dbCred)
 
 # For local database testing
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 # filePath = os.path.join(currRelPath, "facebook_key.json")
 # fbKey = open(filePath, "r")
