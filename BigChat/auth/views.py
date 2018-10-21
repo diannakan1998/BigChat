@@ -11,7 +11,7 @@ from django.views.generic import View
 
 
 # from . import models
-from .models import Users
+# from .models import Users
 from .models import getChatListModel
 
 def index(request):
@@ -229,9 +229,9 @@ def findUser(email, token):
     # Get Users...
      try:
          # Throws an expection if zero or more than one found
-         user = Users.objects.get(email=email)
-         user.token = token
-         user.save()
+        #  user = Users.objects.get(email=email)
+        #  user.token = token
+        #  user.save()
          return True
      except Exception:
          return False
@@ -246,9 +246,9 @@ def updateToken(name, email, app_id, old_token, new_token, authType):
          status = auth(name, email, app_id, new_token, authType)
          if 'error' in status:
              return status
-         user = Users.objects.get(email=email)
-         user.token = new_token
-         user.save()
+        #  user = Users.objects.get(email=email)
+        #  user.token = new_token
+        #  user.save()
          return {'status': "Succesfully updated token"}
      except Exception:
         return {'error': "Failed to update token. User not found."}
@@ -258,15 +258,15 @@ def addUser(email, token):
     # Adds Users...
      try:
          # Adding the user entry
-         user = Users(email=email, token=token)
-         user.save()
-         user_id = user.user_id
-         user.chat_list_id = "chat_list_" + user_id
-         user.save()
+        #  user = Users(email=email, token=token)
+        #  user.save()
+        #  user_id = user.user_id
+        #  user.chat_list_id = "chat_list_" + user_id
+        #  user.save()
 
          # Creating the chat list table
-         chatList = getChatListModel(user.chat_list_id)
-         chatList.save()
+        #  chatList = getChatListModel(user.chat_list_id)
+        #  chatList.save()
          return {'success': "Succesfully added new user"}
 
      except Exception:
