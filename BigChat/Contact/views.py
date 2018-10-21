@@ -37,7 +37,7 @@ def getUserId(token):
 def addNewUser(token):
     try:
         contact = Contact.objects.raw('INSERT INTO contact_list (user_id, friend_id, date_added, date_modified) VALUES ((SELECT user_id FROM user_profile WHERE token = %s), NULL, NOW(), NOW())', [token])
-        return {'success': "Succesfully added new user"}
+        return {'success': 200}
     except Exception:
         return {'error': "Failed to add new user."}
 

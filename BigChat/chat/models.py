@@ -5,14 +5,14 @@ from django.contrib.postgres.fields import ArrayField
 
 def chatModel(chatId):
     class chat(models.Model):
-        # user_id = models.IntegerField()
-        # user_name = models.CharField()
+        user_id = models.IntegerField()
+        user_name = models.CharField()
         user_email = models.CharField()
         message = models.CharField()
         media = ArrayField(models.BinaryField())
         message_type = models.IntegerField()
-        date_added = models.TimeField()
-        data_modified = models.TimeField()
+        date_added = models.DateTimeField(auto_now=True)
+        date_modified = models.DateTimeField(auto_now=True)
 
         class Meta:
             db_table = chatId
