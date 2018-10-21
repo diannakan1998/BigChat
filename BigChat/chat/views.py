@@ -16,7 +16,7 @@ from .models import chatModel
 
 
 def index(request):
-     return HttpResponse("Auth POST")
+     return HttpResponse("chat POST")
 
 
 # class ChatList(View):
@@ -37,7 +37,7 @@ class MessageHistory(View):
             user = Users.objects.get(token=token)
             if chatId in user.chat_list_id:
                 chat = chatModel(chatId)
-                return serializers.serialize('json', chat.objects.raw('select * from %s order by date_added ASC', [chatId]))
+                return serializers.serialize('json', chat.objects.raw('select * from public.\"%s\" order by date_added ASC', [chatId]))
             else:
                 return JsonResponse({'error' : 'no chat error'})
         except Exception:
@@ -53,7 +53,7 @@ class MessageHistory(View):
             user = Users.objects.get(token=token)
             if chatId in user.chat_list_id:
                 chat = chatModel(chatId)
-                chat.objects.raw('insert into %s (user_email, message, message_type, date_added, date_modified) VALUES(%s, %s, %d, NOW(), NOW())', [chatId], [email], [message], [messageType])
+                chat.objects.raw('insert into public.\"%s\"" (user_email, message, message_type, date_added, date_modified) VALUES(%s, %s, %d, NOW(), NOW())', [chatId], [email], [message], [messageType])
                 return JsonResponse({'success' : 'no error'})
             else:
                 return JsonResponse({'error' : 'no chat error'})

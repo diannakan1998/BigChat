@@ -171,7 +171,7 @@ def auth(name, email, user_id, app_id, token, authType):
              print(jsonReq)
 
              # TODO: Remove
-             return {"success": "BigChat true"}
+             # return {"success": "BigChat true"}
 
              if 'error' in jsonReq:
                  return {"error": jsonReq['error']['message'] }

@@ -42,7 +42,7 @@ def addNewUser(token):
 
 def getContact(token):
     try:
-        return Contact.object.raw('SELECT friend_id from contact_list where user_id =  (SELECT user_id FROM user_profile WHERE token = %s)', [token])
+        return Contact.object.raw('SELECT friend_id from public.\"contact_list\" where user_id =  (SELECT user_id FROM user_profile WHERE token = %s)', [token])
     except Exception:
         return {'error': "Failed to get contact."}
 
