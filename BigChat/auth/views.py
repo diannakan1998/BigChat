@@ -169,9 +169,10 @@ def auth(name, email, user_id, app_id, token, authType):
              jsonReq_app_id = json.loads(req_app_id.text)
 
              print(jsonReq)
+             print(jsonReq_app_id)
 
              # TODO: Remove
-             return {"success": "BigChat true"}
+            #  return {"success": "BigChat true"}
 
              if 'error' in jsonReq:
                  return {"error": jsonReq['error']['message'] }
@@ -179,12 +180,12 @@ def auth(name, email, user_id, app_id, token, authType):
              if 'error' in jsonReq_app_id:
                  return {"error": jsonReq_app_id['error']['message'] }
 
-             print(jsonReq)
 
              f = open('facebook_key.json')
              facebookKey = json.load(f)
              jsonReq.email = jsonReq.email.replace("\u0040", "@")
 
+             print("Facebook auth 1")
              if 'id' in jsonReq_app_id and 'KEY' in facebookKey and 'email' in jsonReq:
                  if jsonReq_app_id['id'] == facebookKey['KEY']and jsonReq['email'] == email:
                      return {"success": "BigChat true"}
