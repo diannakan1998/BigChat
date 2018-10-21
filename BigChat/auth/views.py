@@ -12,6 +12,7 @@ from django.views.generic import View
 
 # from . import models
 from .models import Users
+from .models import getChatListModel
 
 def index(request):
     return HttpResponse("Auth POST")
@@ -57,15 +58,14 @@ class updateUserToken(View):
 def processAuthRequest(request):
      name = request.GET.get("name")
      email = request.GET.get("email")
-     user_id = request.GET.get("user_id")
      app_id = request.GET.get("app_id")
      token = request.GET.get("token")
      authType = request.GET.get("authType")
 
-     status = auth(name, email, user_id, app_id, token, authType)
+     status = auth(name, email, app_id, token, authType)
 
      if 'success' in status:
-        return checkForNewUser(email, user_id, token)
+        return checkForNewUser(email, token)
      else:
          return status
     
@@ -74,7 +74,6 @@ def processAuthRequest(request):
 def processUpdateTokenRequest(request):
     name = request.GET.get("name")
     email = request.GET.get("email")
-    user_id = request.GET.get("user_id")
     app_id = request.GET.get("app_id")
     old_token = request.GET.get("old_token")
     new_token = request.GET.get("new_token")
@@ -85,10 +84,10 @@ def processUpdateTokenRequest(request):
     if new_token is None:
          return {'error': 'Cannot process with no new token'}
 
-    return updateToken(name, email, user_id, app_id, old_token, new_token, authType)
+    return updateToken(name, email, app_id, old_token, new_token, authType)
 
 
-def auth(name, email, user_id, app_id, token, authType):
+def auth(name, email, app_id, token, authType):
 
      # name can be null, not mandatory...
      #  if name is None:
@@ -96,7 +95,6 @@ def auth(name, email, user_id, app_id, token, authType):
 
      print (name)
      print (email)
-     print (user_id)
      print (app_id)
      print (token)
      print (authType)
@@ -107,9 +105,6 @@ def auth(name, email, user_id, app_id, token, authType):
      # Can be obtained from the access token
      #  if app_id is None:
         #  return JsonResponse( { 'error' : 'Cannot process with no app_id' } )
-
-     if user_id is None:
-         return { 'error' : 'Cannot process with no user_id' }
 
      if token is None:
          return {'error': 'Cannot process with no token'}
@@ -219,23 +214,22 @@ def auth(name, email, user_id, app_id, token, authType):
 
 
 # Checks and adds new users
-def checkForNewUser(email, user_id, token):
+def checkForNewUser(email, token):
 
-    user_exists = findUser(email, user_id, token)
+    user_exists = findUser(email, token)
 
     if user_exists == False:
-        return addUser(email, user_id, token)
+        return addUser(email, token)
     else:
         return {"success": "user exists", "newUser": "false"}
 
 
-def findUser(email, user_id, token):
+def findUser(email, token):
 
     # Get Users...
      try:
          # Throws an expection if zero or more than one found
          user = Users.objects.get(email=email)
-         user.user_id = user_id
          user.token = token
          user.save()
          return True
@@ -245,15 +239,14 @@ def findUser(email, user_id, token):
 
 
 
-def updateToken(name, email, user_id, app_id, old_token, new_token, authType):
+def updateToken(name, email, app_id, old_token, new_token, authType):
     # TODO: implement
     # Get Users...
      try:
-         status = auth(name, email, user_id, app_id, new_token, authType)
+         status = auth(name, email, app_id, new_token, authType)
          if 'error' in status:
              return status
          user = Users.objects.get(email=email)
-         user.user_id = user_id
          user.token = new_token
          user.save()
          return {'status': "Succesfully updated token"}
@@ -261,19 +254,21 @@ def updateToken(name, email, user_id, app_id, old_token, new_token, authType):
         return {'error': "Failed to update token. User not found."}
 
 
-def addUser(email, user_id, token):
+def addUser(email, token):
     # Adds Users...
      try:
-         # TODO: Loop while chatId is unique, need to figure out the exception thrown for nonUnique
-
-         chatId = str(uuid.uuid1())
-         user = Users(email=email, user_id=user_id, token=token)
+         # Adding the user entry
+         user = Users(email=email, token=token)
          user.save()
+         user_id = user.user_id
+         user.chat_list_id = "chat_list_" + user_id
+         user.save()
+
+         # Creating the chat list table
+         chatList = getChatListModel(user.chat_list_id)
+         chatList.save()
          return {'success': "Succesfully added new user"}
 
-     except IntegrityError: 
-        #  if 'unique constraint' in e.message:
-         return {'error': "Failed to add user. Integrity Error."}
      except Exception:
          return {'error': "Failed to add user."}
 
