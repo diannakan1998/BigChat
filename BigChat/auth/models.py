@@ -8,7 +8,7 @@ class Users(models.Model):
      email = models.CharField( max_length=100, validators=[ EmailValidator() ], blank=False, unique=True)
      user_id = models.AutoField(primary_key=True)
      token = models.CharField(max_length=255, unique=True, blank=False)
-     chat_list_id = models.CharField()
+     chat_list_id = models.TextField()
 
      class Meta:
          db_table = 'Users'
@@ -17,11 +17,11 @@ class Users(models.Model):
 
 def getChatListModel(db_table):
  class ChatList(models.Model):
-     chat_id = models.CharField()
-     last_message = models.CharField()
+     chat_id = models.TextField()
+     last_message = models.TextField()
      message_type = models.IntegerField()
      read_flag = models.IntegerField()
-     date_modified = models.TimeField()
+     date_modified = models.DateTimeField()
      
      class Meta:
          db_table = db_table
