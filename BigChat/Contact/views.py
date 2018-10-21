@@ -7,6 +7,7 @@ from auth.models import Users
 from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
+from django.core import serializers
 
 def index(request):
      return HttpResponse("Contact POST")
@@ -14,7 +15,7 @@ def index(request):
 class Contacts(View):
     def get(self, request):
         token = request.GET.get("token")
-        print('get')
+        print(token)
         return JsonResponse(getContact(token))
     
     # def addNew(self, request):
@@ -35,15 +36,24 @@ def getUserId(token):
 
 def addNewUser(token):
     try:
-        contact = Contact.object.raw('INSERT INTO contact_list (user_id, friend_id, date_added, date_modified) VALUES ((SELECT user_id FROM user_profile WHERE token = %s), NULL, NOW(), NOW())', [token])
+        contact = Contact.objects.raw('INSERT INTO contact_list (user_id, friend_id, date_added, date_modified) VALUES ((SELECT user_id FROM user_profile WHERE token = %s), NULL, NOW(), NOW())', [token])
         return {'success': "Succesfully added new user"}
     except Exception:
         return {'error': "Failed to add new user."}
 
 def getContact(token):
     try:
-        return Contact.object.raw('SELECT friend_id from public.\"contact_list\" where user_id =  (SELECT user_id FROM user_profile WHERE token = %s)', [token])
-    except Exception:
+        user =  Users.objects.get(token=token)
+        print(user.user_id)
+        frd = Contact.objects.get(user_id=user.user_id)
+        print(frd.friend_id)
+        jsonObj = { "friend_id" : []}
+        for i in frd.friend_id:
+            jsonObj['friend_id'].append(i)
+        print(jsonObj)
+        return jsonObj
+    except Exception as e:
+        print(e)
         return {'error': "Failed to get contact."}
 
 def addFriend(userId, friendId):

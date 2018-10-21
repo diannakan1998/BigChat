@@ -35,9 +35,14 @@ class MessageHistory(View):
         token = requests.GET.get('token')
         try: 
             user = Users.objects.get(token=token)
+            print(user.user_id)
             if chatId in user.chat_list_id:
-                chat = chatModel(chatId)
-                return serializers.serialize('json', chat.objects.raw('select * from public.\"%s\" order by date_added ASC', [chatId]))
+                print(user.chat_list_id)
+                chats = chatModel(chatId)
+                print(chats)
+                c = chats.objects.raw('select * from %s order by date_added ASC', [chatId])
+                print(c.message)
+                return serializers.serialize('json', c)
             else:
                 return JsonResponse({'error' : 'no chat error'})
         except Exception:
@@ -53,7 +58,7 @@ class MessageHistory(View):
             user = Users.objects.get(token=token)
             if chatId in user.chat_list_id:
                 chat = chatModel(chatId)
-                chat.objects.raw('insert into public.\"%s\"" (user_email, message, message_type, date_added, date_modified) VALUES(%s, %s, %d, NOW(), NOW())', [chatId], [email], [message], [messageType])
+                chat.objects.raw('insert into public.\"%s\" (user_email, message, message_type, date_added, date_modified) VALUES(%s, %s, %d, NOW(), NOW())', [chatId], [email], [message], [messageType])
                 return JsonResponse({'success' : 'no error'})
             else:
                 return JsonResponse({'error' : 'no chat error'})

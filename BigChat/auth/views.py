@@ -258,7 +258,7 @@ def updateToken(name, email, user_id, app_id, old_token, new_token, authType):
          user.save()
          return {'status': "Succesfully updated token"}
      except Exception:
-         return {'error': "Failed to update token. User not found."}
+        return {'error': "Failed to update token. User not found."}
 
 
 def addUser(email, user_id, token):
