@@ -4,14 +4,16 @@ from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
 
-#class Users(models.Model):
-#     email = models.CharField( max_length=100, validators=[ EmailValidator() ], blank=False, unique=True)
-#     user_id = models.AutoField(primary_key=True)
-#     token = models.CharField(max_length=255, unique=True, blank=False)
-#     chat_list_id = models.CharField(max_length=255, unique=True)
 
-#     class Meta:
-#         db_table = 'Users'
+# class Users(models.Model):
+#      email = models.CharField( max_length=100, validators=[ EmailValidator() ], blank=False, unique=True)
+#      user_id = models.AutoField(primary_key=True)
+#      token = models.CharField(max_length=255, unique=True, blank=False)
+#      chat_list_id = models.TextField(blank=True)
+
+#      class Meta:
+#          db_table = 'Users'
+
 
 
 
