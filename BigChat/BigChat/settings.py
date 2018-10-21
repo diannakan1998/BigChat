@@ -64,6 +64,7 @@ DATABASES = json.load(dbCred)
 ALLOWED_HOSTS = ["*"]
 
 
+
 # AUTHENTICATION_BACKENDS = (
 
 #     'social_core.backends.google.GoogleOAuth2',
