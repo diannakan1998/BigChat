@@ -23,6 +23,12 @@ class Contacts(View):
     #     return JsonResponse(addNewUser(token))
 
 
+# class Profile(View):
+#     def get(self, request):
+#         token = request.GET.get("token")
+        
+
+
 
 def getUserId(token):
     try:
