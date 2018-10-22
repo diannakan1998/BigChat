@@ -23,10 +23,7 @@ class Contacts(View):
     #     return JsonResponse(addNewUser(token))
 
 
-# class Profile(View):
-#     def get(self, request):
-#         token = request.GET.get("token")
-        
+
 
 
 
@@ -55,7 +52,10 @@ def getContact(token):
         print(frd.friend_id)
         jsonObj = { "friend_id" : []}
         for i in frd.friend_id:
-            jsonObj['friend_id'].append(i)
+            jo = {"email": 1}
+            f = Users.objects.get(token=i)
+            jo['email'] = f.email
+            jsonObj['friend_id'].append(jo)
         print(jsonObj)
         return jsonObj
     except Exception as e:

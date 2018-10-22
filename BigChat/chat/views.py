@@ -12,12 +12,21 @@ from django.views.generic import View
 from django.core import serializers
 from django.utils import timezone
 
-from auth.models import Users
+from auth.models import Users, getChatListModel
 from .models import chatModel
+from django.db import connection
 
 
 def index(request):
-     return HttpResponse("chat POST")
+    # cursor = connection.cursor()
+    # cursor.execute(''' ''')
+    listm = getChatListModel("chat_list_123465")
+    cl = listm.objects.get(chat_id='chat_table_1')
+    cl.message = 'adsfasdf'
+    cl.message_type = 1
+    cl.flag = 0
+    cl.save()
+    return HttpResponse("chat POST")
 
 
 # class ChatList(View):
@@ -83,7 +92,7 @@ class MessageHistory(View):
                 cl.message_type = mtype
                 cl.flag = 1
                 cl.save()
-                return JsonResponse({'success' : 200})
+                return JsonResponse({'success' : 'send success'})
             else:
                 return JsonResponse({'error' : 'no chat error'})
         except Exception as e:
