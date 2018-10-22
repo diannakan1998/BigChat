@@ -20,17 +20,11 @@ from django.db import connection
 def index(request):
     # cursor = connection.cursor()
     # cursor.execute(''' ''')
-    listm = getChatListModel("chat_list_123465")
-    cl = listm.objects.get(chat_id='chat_table_1')
-    cl.message = 'adsfasdf'
-    cl.message_type = 1
-    cl.flag = 0
-    cl.save()
     return HttpResponse("chat POST")
 
 
 # class ChatList(View):
-    
+
 #     def get(self, requests):
 #          return HttpResponse("ChatList GET")
 
@@ -43,30 +37,27 @@ class MessageHistory(View):
     def get(self, requests):
         chatId = requests.GET.get('chatId')
         token = requests.GET.get('token')
-        try: 
+        try:
             user = Users.objects.get(token=token)
+            listname = "chat_list_"+str(user.user_id)
+            listm = getChatListModel(listname)
+            cursor = connection.cursor()   
+            cursor.execute('''UPDATE ''' + listname + ''' SET flag=0 WHERE chat_id = \''''+ chatId + '''\';''')
             print(user.user_id)
-            if chatId in user.chat_list_id:
-                print(user.chat_list_id)
-                chats = chatModel(chatId)
-                print(chatId)
-                c = chats.objects.all().order_by('date_added')
-                listm = getChatListModel("chat_list_"+user.user_id)
-                cl.flag = 0
-                cl.save()
+            chats = chatModel(chatId)
+            print(chatId)
+            c = chats.objects.all().order_by('date_added')
 
-                jsonObjRoot = { "messages": []}
-                for i in c:
-                    jsonObj = { "user_email" : 1, "message": 1, "type": 1, "time": 1}
-                    jsonObj['user_email'] = i.user_email
-                    jsonObj['message'] = i.message
-                    jsonObj['type'] = i.message_type
-                    jsonObj['time'] = i.date_added.timestamp()
-                    jsonObjRoot["messages"].append(jsonObj)
-                print(jsonObjRoot)
-                return JsonResponse(jsonObjRoot)
-            else:
-                return JsonResponse({'error' : 'no chat error'})
+            jsonObjRoot = { "messages": [], 'error':''}
+            for i in c:
+                jsonObj = { "user_email" : 1, "message": 1, "type": 1, "time": 1}
+                jsonObj['user_email'] = i.user_email
+                jsonObj['message'] = i.message
+                jsonObj['type'] = i.message_type
+                jsonObj['time'] = i.date_added.timestamp()
+                jsonObjRoot["messages"].append(jsonObj)
+            print(jsonObjRoot)
+            return JsonResponse(jsonObjRoot)
         except Exception as e:
             print(e)
             return JsonResponse({'error' : 'chat error'})
@@ -78,23 +69,20 @@ class MessageHistory(View):
         mtype = requests.GET.get('type')
         email = requests.GET.get('email')
         print(message)
-        try: 
+        print(token)
+        print(chatId)
+        print(mtype)
+        try:
             user = Users.objects.get(token=token)
-            if chatId in user.chat_list_id:
-                print(user.chat_list_id)
-                chat = chatModel(chatId)
-                msgn = chat(user_email=email, message=message, message_type=mtype, user_id=user.user_id)
-                msgn.save()
-                listm = getChatListModel("chat_list_"+user.user_id)
-                cl = listm.objects.get(chat_id=chatId)
-                cl.date_modified = msgn.date_added
-                cl.message = message
-                cl.message_type = mtype
-                cl.flag = 1
-                cl.save()
-                return JsonResponse({'success' : 'send success'})
-            else:
-                return JsonResponse({'error' : 'no chat error'})
+            print(user.chat_list_id)
+            listname = "chat_list_"+str(user.user_id)
+            cursor = connection.cursor()  
+            cursor.execute('''UPDATE '''+listname+''' SET message=\''''+message+'''\', '''+'''message_type='''+str(mtype)+''', flag=1, date_modified=NOW() WHERE chat_id=\''''+chatId+'''\';''')
+
+            chat = chatModel(chatId)
+            msgn = chat(user_email=email, message=message, message_type=mtype, user_id=user.user_id)
+            msgn.save()
+            return JsonResponse({'success' : 'send success', 'error':''})
         except Exception as e:
             print(e)
             return JsonResponse({'error' : 'chat error'})
@@ -106,23 +94,30 @@ class chatlist(View):
         token = requests.GET.get('token')
         try:
             user = Users.objects.get(token=token)
-            listm = getChatListModel("chat_list_"+user.user_id)
-            cl = listm.objects.all().order_by('-date_modified')
-            jsonObjRoot = { "chats": []}
+            cln = "chat_list_"+str(user.user_id)
+            listm = getChatListModel("chat_list_"+str(user.user_id))
+            print(user.user_id)
+            cursor = connection.cursor()
+            cursor.execute('''SELECT * FROM ''' + cln + ''' ORDER BY date_modified DESC;''')
+            cl = cursor.fetchall()
+            # cl = listm.objects.all().order_by('-date_modified')
+            jsonObjRoot = { "chats": [],'error':''}
             for i in cl:
+                # id
+                # table name
+                # message
+                # message mtyp
+                # date date_added
+                # date_modified
+                # flag
                 jsonObj = { "chatId" : 1, "message": 1, "type": 1, "time": 1, "flag": 0}
-                jsonObj['chatId'] = i.chat_id
-                jsonObj['message'] = i.message
-                jsonObj['type'] = i.message_type
-                jsonObj['time'] = i.date_modified.timestamp()
-                jsonObj['flag'] = i.flag
-                jsonObjRoot["messages"].append(jsonObj)
-            print(jsonObjRoot)
+                jsonObj['chatId'] = i[1]
+                jsonObj['message'] = i[2]
+                jsonObj['type'] = i[3]
+                jsonObj['time'] = i[5]
+                jsonObj['flag'] = i[6]
+                jsonObjRoot["chats"].append(jsonObj)
             return JsonResponse(jsonObjRoot)
         except Exception as e:
             print(e)
             return JsonResponse({'error' : 'chatlist error'})
-
-
-
-

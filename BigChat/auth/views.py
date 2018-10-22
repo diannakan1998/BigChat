@@ -8,10 +8,10 @@ from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
-
+from django.db import connection
 
 # from . import models
-# from .models import Users
+from .models import Users
 from .models import getChatListModel
 
 def index(request):
@@ -124,7 +124,7 @@ def auth(name, email, app_id, token, authType):
              if 'error' in jsonReq:
                  return jsonReq
 
-             f = open('google_key.json')
+             f = open('auth/google_key.json')
              googleKey = json.load(f)
 
              if 'issued_to' in jsonReq and 'email' in jsonReq:
@@ -177,7 +177,7 @@ def auth(name, email, app_id, token, authType):
                  return {"error": jsonReq_app_id['error']['message'] }
 
 
-             f = open('facebook_key.json')
+             f = open('auth/facebook_key.json')
              facebookKey = json.load(f)
              jsonReq.email = jsonReq.email.replace("\u0040", "@")
 
@@ -229,9 +229,9 @@ def findUser(email, token):
     # Get Users...
      try:
          # Throws an expection if zero or more than one found
-        #  user = Users.objects.get(email=email)
-        #  user.token = token
-        #  user.save()
+         user = Users.objects.get(email=email)
+         user.token = token
+         user.save()
          return True
      except Exception:
          return False
@@ -246,9 +246,9 @@ def updateToken(name, email, app_id, old_token, new_token, authType):
          status = auth(name, email, app_id, new_token, authType)
          if 'error' in status:
              return status
-        #  user = Users.objects.get(email=email)
-        #  user.token = new_token
-        #  user.save()
+         user = Users.objects.get(email=email)
+         user.token = new_token
+         user.save()
          return {'status': "Succesfully updated token"}
      except Exception:
         return {'error': "Failed to update token. User not found."}
@@ -258,18 +258,23 @@ def addUser(email, token):
     # Adds Users...
      try:
          # Adding the user entry
-        #  user = Users(email=email, token=token)
-        #  user.save()
-        #  user_id = user.user_id
-        #  user.chat_list_id = "chat_list_" + user_id
-        #  user.save()
+         print ( "user: ")
+         user = Users(email=email, token=token)
+         user.save()
+         print ( "user: ")
 
+         user_id = user.user_id
+         user.chat_list_id = "chat_list_" + str(user_id)
+         user.save()
+         print (user.chat_list_id)
          # Creating the chat list table
-        #  chatList = getChatListModel(user.chat_list_id)
-        #  chatList.save()
+         cursor = connection.cursor()
+         cursor.execute("CREATE TABLE "+ user.chat_list_id +" ( id SERIAL, chat_id text NOT NULL, message text DEFAULT NULL, message_type integer DEFAULT NULL, date_added TIMESTAMP DEFAULT NULL, date_modified TIMESTAMP DEFAULT NULL, flag integer DEFAULT 0, PRIMARY KEY(id))", [user.chat_list_id])
+
          return {'success': "Succesfully added new user"}
 
-     except Exception:
+     except Exception as exp:
+         print (exp)
          return {'error': "Failed to add user."}
 
 

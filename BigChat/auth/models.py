@@ -9,25 +9,26 @@ class Users(models.Model):
      email = models.CharField( max_length=100, validators=[ EmailValidator() ], blank=False, unique=True)
      user_id = models.AutoField(primary_key=True)
      token = models.CharField(max_length=255, unique=True, blank=False)
-     chat_list_id = models.TextField(blank=True)
+     chat_list_id = models.TextField(default="")
 
      class Meta:
-         db_table = 'Users'
+         db_table = 'myAuth_users'
 
 
 
 
-def getChatListModel(tablename):
+
+def getChatListModel(name):
     class ChatList(models.Model):
-        chat_id = models.TextField()
-        last_message = models.TextField()
-        message_type = models.IntegerField()
-        read_flag = models.IntegerField()
-        date_added = models.DateTimeField()
-        date_modified = models.DateTimeField()
+        chat_id = models.TextField(default="")
+        message = models.TextField(default="")
+        message_type = models.IntegerField(blank=True)
+        flag = models.IntegerField(blank=True)
+        date_added = models.DateTimeField(default="")
+        date_modified = models.DateTimeField(default="")
 
     class Meta:
-        db_table = tablename
+        db_table = name
     
     return ChatList
 
