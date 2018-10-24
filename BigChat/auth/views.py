@@ -12,7 +12,6 @@ from django.db import connection
 
 # from . import models
 from .models import Users
-from .models import getChatListModel
 
 def index(request):
     return HttpResponse("Auth POST")
@@ -68,7 +67,7 @@ def processAuthRequest(request):
         return checkForNewUser(email, token)
      else:
          return status
-    
+
 
 
 def processUpdateTokenRequest(request):
@@ -118,17 +117,20 @@ def auth(name, email, app_id, token, authType):
          if authType == "google":
              url = "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=" + token
              req = requests.post(url)
- 
+
              jsonReq = json.loads(req.text)
- 
+
              if 'error' in jsonReq:
                  return jsonReq
 
              f = open('auth/google_key.json')
              googleKey = json.load(f)
 
-             if 'issued_to' in jsonReq and 'email' in jsonReq:
-                 if jsonReq['issued_to'] == googleKey['KEY'] and jsonReq['email'] == email:
+             f = open('auth/google_key.json.old')
+             googleKeyOld = json.load(f)
+
+             if 'issued_to' in jsonReq and 'email' in jsonReq and 'KEY' in googleKey and 'KEY' in googleKeyOld:
+                 if (jsonReq['issued_to'] == googleKeyOld['KEY'] or jsonReq['issued_to'] == googleKey['KEY']) and jsonReq['email'] == email:
                      return {"success": "BigChat true"}
                  else:
                      return {"error": "BigChat false"}
@@ -179,11 +181,15 @@ def auth(name, email, app_id, token, authType):
 
              f = open('auth/facebook_key.json')
              facebookKey = json.load(f)
+
+             f = open('auth/facebook_key.json.old')
+             facebookKeyOld = json.load(f)
+
              jsonReq.email = jsonReq.email.replace("\u0040", "@")
 
              print("Facebook auth 1")
-             if 'id' in jsonReq_app_id and 'KEY' in facebookKey and 'email' in jsonReq:
-                 if jsonReq_app_id['id'] == facebookKey['KEY']and jsonReq['email'] == email:
+             if 'id' in jsonReq_app_id and 'KEY' in facebookKey and 'email' in jsonReq and 'KEY' in facebookKeyOld:
+                 if (jsonReq_app_id['id'] == facebookKey['KEY'] or jsonReq_app_id['id'] == facebookKeyOld['KEY']) and jsonReq['email'] == email:
                      return {"success": "BigChat true"}
                  else:
                      return {"error": "BigChat false"}
@@ -268,14 +274,11 @@ def addUser(email, token):
          user.save()
          print (user.chat_list_id)
          # Creating the chat list table
-         cursor = connection.cursor()
-         cursor.execute("CREATE TABLE "+ user.chat_list_id +" ( id SERIAL, chat_id text NOT NULL, message text DEFAULT NULL, message_type integer DEFAULT NULL, date_added TIMESTAMP DEFAULT NULL, date_modified TIMESTAMP DEFAULT NULL, flag integer DEFAULT 0, PRIMARY KEY(id))", [user.chat_list_id])
+         # cursor = connection.cursor()
+         # cursor.execute("CREATE TABLE "+ user.chat_list_id +" ( id SERIAL, chat_id text NOT NULL, message text DEFAULT NULL, message_type integer DEFAULT NULL, date_added TIMESTAMP DEFAULT NULL, date_modified TIMESTAMP DEFAULT NULL, flag integer DEFAULT 0, name text DEFAULT NULL, PRIMARY KEY(id))", [user.chat_list_id])
 
          return {'success': "Succesfully added new user"}
 
      except Exception as exp:
          print (exp)
          return {'error': "Failed to add user."}
-
-
-         

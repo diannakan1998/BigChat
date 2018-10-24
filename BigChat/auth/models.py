@@ -18,19 +18,21 @@ class Users(models.Model):
 
 
 
-def getChatListModel(name):
-    class ChatList(models.Model):
-        chat_id = models.TextField(default="")
-        message = models.TextField(default="")
-        message_type = models.IntegerField(blank=True)
-        flag = models.IntegerField(blank=True)
-        date_added = models.DateTimeField(default="")
-        date_modified = models.DateTimeField(default="")
+# def getChatListModel(name):
+class ChatList(models.Model):
+    user_id = models.BigIntegerField()
+    chat_id = models.TextField(default="")
+    message = models.TextField(default="")
+    message_type = models.IntegerField(blank=True)
+    flag = models.IntegerField(blank=True)
+    date_added = models.DateTimeField()
+    date_modified = models.DateTimeField()
+    name = models.TextField()
 
     class Meta:
-        db_table = name
+        db_table = 'chat_list'
     
-    return ChatList
+    # return ChatList
 
 
  # class chatTable(models.Model):
