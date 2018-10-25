@@ -19,7 +19,7 @@ class Contacts(View):
         token = request.GET.get("token")
         print(token)
         return JsonResponse(getContact(token))
-    
+
     # def addNew(self, request):
     #     token = request.GET.get("token")
     #     return JsonResponse(addNewUser(token))

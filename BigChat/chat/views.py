@@ -47,7 +47,7 @@ class MessageHistory(View):
                 i.flag = 0
                 i.save()
 
-            # cursor = connection.cursor()   
+            # cursor = connection.cursor()
             # cursor.execute('''UPDATE ''' + listname + ''' SET flag=0 WHERE chat_id = \''''+ chatId + '''\';''')
             print(user.user_id)
             chats = chatModel(chatId)
