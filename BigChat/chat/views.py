@@ -35,7 +35,7 @@ def index(request):
 
 class MessageHistory(View):
 
-    def post(self, requests):
+    def get(self, requests):
         chatId = requests.GET.get('chatId')
         token = requests.GET.get('token')
         try:
@@ -51,7 +51,7 @@ class MessageHistory(View):
             print(user.user_id)
             chats = chatModel(chatId)
             print(chatId)
-            c = chats.objects.all().order_by('-date_added')
+            c = chats.objects.all().order_by('date_added')
 
             jsonObjRoot = { "messages": [], 'error':''}
             for i in c:
@@ -79,7 +79,7 @@ class MessageHistory(View):
             print(e)
             return JsonResponse({'error' : 'chat error'})
 
-    def get(self, requests):
+    def post(self, requests):
         message = requests.GET.get('message')
         token = requests.GET.get('token')
         chatId = requests.GET.get('chatId')
@@ -91,7 +91,7 @@ class MessageHistory(View):
         print(mtype)
         try:
             user = Users.objects.get(token=token)
-            print(user.chat_list_id)
+            # print(user.chat_list_id)
             cl = ChatList.objects.filter(chat_id=chatId)
             for i in cl:
                 i.message=message
@@ -125,8 +125,8 @@ class chatlist(View):
             # cursor.execute('''SELECT * FROM ''' + cln + ''' ORDER BY date_modified DESC;''')
             # cl = cursor.fetchall()
             # print(cl)
-            cl = ChatList.objects.filter(user_id=user.user_id).order_by('-date_modified')
-            print(cl)
+            cl = ChatList.objects.filter(user_id=user.user_id).order_by('date_modified')
+            # print(cl)
             jsonObjRoot = { "chats": [],'error':''}
             for i in cl:
                 # id
