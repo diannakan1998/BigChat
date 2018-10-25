@@ -20,7 +20,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 	path('auth/', include('auth.urls')),
     path('Contact/', include('Contact.urls')),
-    path('chat/', include('chat.urls'))
+    path('chat/', include('chat.urls')) 
 ]
 
 
