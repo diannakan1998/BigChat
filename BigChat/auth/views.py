@@ -29,6 +29,7 @@ class Authenticate(View):
 
 class updateUserToken(View):
 
+    @classmethod
     def get(self, request):
 
         status = processUpdateTokenRequest(request)
@@ -36,7 +37,8 @@ class updateUserToken(View):
             return HttpResponse("updateUserToken GET")
         else:
             return JsonResponse(status)
-    
+
+    @classmethod
     def post(self, request):
 
         status = processUpdateTokenRequest(request)

@@ -115,6 +115,7 @@ class MessageHistory(View):
 
 class chatlist(View):
 
+    @classmethod
     def get(self, requests):
         token = requests.GET.get('token')
         try:

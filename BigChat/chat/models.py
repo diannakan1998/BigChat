@@ -16,6 +16,6 @@ def chatModel(chatId):
 
         class Meta:
             db_table = chatId
-    
+
     return chat
 

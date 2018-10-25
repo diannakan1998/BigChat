@@ -30,7 +30,7 @@ class ChatList(models.Model):
 
     class Meta:
         db_table = 'chat_list'
-    
+
     # return ChatList
 
 

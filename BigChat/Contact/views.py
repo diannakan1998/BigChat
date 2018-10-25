@@ -13,7 +13,7 @@ def index(request):
      return HttpResponse("Contact POST")
 
 class Contacts(View):
-    
+
     @classmethod
     def get(self, request):
         token = request.GET.get("token")
