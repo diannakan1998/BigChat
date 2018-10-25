@@ -19,10 +19,10 @@ def index(request):
 
 class Authenticate(View):
     # model = models.Users
-
+    @classmethod
     def get(self, request):
         return JsonResponse(processAuthRequest(request))
-
+    @classmethod
     def post(self, request):
         return JsonResponse(processAuthRequest(request))
 
@@ -36,7 +36,7 @@ class updateUserToken(View):
             return HttpResponse("updateUserToken GET")
         else:
             return JsonResponse(status)
-
+    
     def post(self, request):
 
         status = processUpdateTokenRequest(request)
@@ -45,6 +45,7 @@ class updateUserToken(View):
         else:
             return JsonResponse(status)
 
+    @classmethod
     def put(self, request):
 
         status = processUpdateTokenRequest(request)
@@ -169,7 +170,7 @@ def auth(name, email, app_id, token, authType):
              print(jsonReq_app_id)
 
              # TODO: Remove
-             return {"success": "BigChat true"}
+             #  return {"success": "BigChat true"}
 
 
              if 'error' in jsonReq:

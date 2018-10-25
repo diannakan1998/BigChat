@@ -35,12 +35,13 @@ def index(request):
 
 class MessageHistory(View):
 
+    @classmethod
     def get(self, requests):
         chatId = requests.GET.get('chatId')
         token = requests.GET.get('token')
         try:
             user = Users.objects.get(token=token)
-            listname = "chat_list_"+str(user.user_id)
+            # listname = "chat_list_"+str(user.user_id)
             cl = ChatList.objects.filter(user_id=user.user_id, chat_id=chatId)
             for i in cl: 
                 i.flag = 0
@@ -79,6 +80,7 @@ class MessageHistory(View):
             print(e)
             return JsonResponse({'error' : 'chat error'})
 
+    @classmethod
     def post(self, requests):
         message = requests.GET.get('message')
         token = requests.GET.get('token')

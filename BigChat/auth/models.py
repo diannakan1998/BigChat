@@ -18,7 +18,6 @@ class Users(models.Model):
 
 
 
-# def getChatListModel(name):
 class ChatList(models.Model):
     user_id = models.BigIntegerField()
     chat_id = models.TextField(default="")

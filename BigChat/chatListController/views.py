@@ -1,4 +1,4 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 
 # Create your views here.
 import requests
@@ -19,20 +19,23 @@ def index(request):
 
 
 class ChatList(View):
-    
+
+    @classmethod
     def get(self, requests):
          return HttpResponse("ChatList GET")
 
+    @classmethod
     def post(self, requests):
          return HttpResponse("ChatList POST")
 
 
 class MessageHistory(View):
 
+    @classmethod
     def get(self, requests):
          return HttpResponse("Messages GET")
 
+    @classmethod
     def post(self, requests):
          return HttpResponse("Messages POST")
-
 
