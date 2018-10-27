@@ -4,10 +4,10 @@ from django.shortcuts import render
 import requests
 from .models import Contact
 from auth.models import Users
-from django.utils import timezone
+# from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
-from django.core import serializers
+# from django.core import serializers
 
 def index(request):
      return HttpResponse("Contact POST")
@@ -29,15 +29,14 @@ class Contacts(View):
 
 
 
-def getUserId(token):
-    try:
-        user = Users.objects.get(token=token)
-        if 'error' in user:
-            return {'error': "Failed to achieve user. User not found."}
-    except Exception:
-        return {'error': "Failed to update token. User not found."}
-    return user
-
+# def getUserId(token):
+#     try:
+#         user = Users.objects.get(token=token)
+#         if 'error' in user:
+#             return {'error': "Failed to achieve user. User not found."}
+#     except Exception:
+#         return {'error': "Failed to update token. User not found."}
+#     return user
 
 def addNewUser(token):
     try:
@@ -45,6 +44,14 @@ def addNewUser(token):
         return {'success': 200}
     except Exception:
         return {'error': "Failed to add new user."}
+
+# def addNewUser(token):
+#     try:
+#         contact = Contact.objects.raw('INSERT INTO contact_list (user_id, friend_id, date_added, date_modified) VALUES ((SELECT user_id FROM user_profile WHERE token = %s), NULL, NOW(), NOW())', [token])
+#         return {'success': 200}
+#     except Exception:
+#         return {'error': "Failed to add new user."}
+
 
 def getContact(token):
     try:
@@ -64,10 +71,9 @@ def getContact(token):
         print(e)
         return {'error': "Failed to get contact."}
 
-def addFriend(userId, friendId):
-    try:
-        Contact.object.raw('UPDATE contact_list SET friend_id = array_append(friend_id, %d), date_modified = NOW() WHERE user_id = %d', [friendId], [userId])
-        return {'success': "Succesfully added contacts"}
-    except Exception:
-        return {'error': "Failed to add contact."}
-
+# def addFriend(userId, friendId):
+#     try:
+#         Contact.object.raw('UPDATE contact_list SET friend_id = array_append(friend_id, %d), date_modified = NOW() WHERE user_id = %d', [friendId], [userId])
+#         return {'success': "Succesfully added contacts"}
+#     except Exception:
+#         return {'error': "Failed to add contact."}

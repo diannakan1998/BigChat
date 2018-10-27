@@ -1,14 +1,15 @@
 from django.shortcuts import render
 
 # Create your views here.
-import requests, json, uuid
+import requests, json
+# , uuid
 
-from django.db import IntegrityError
-from django.core import serializers
+# from django.db import IntegrityError
+# from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
-from django.db import connection
+# from django.db import connection
 
 # from . import models
 from .models import Users

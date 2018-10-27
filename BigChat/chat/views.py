@@ -6,12 +6,12 @@ import json
 import datetime
 
 
-from django.core import serializers
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.http import HttpResponse, JsonResponse
+# from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
 from django.views.generic import View
 from django.core import serializers
-from django.utils import timezone
+# from django.utils import timezone
 
 from auth.models import Users, ChatList
 from .models import chatModel
@@ -52,7 +52,7 @@ class MessageHistory(View):
             print(user.user_id)
             chats = chatModel(chatId)
             print(chatId)
-            c = chats.objects.all().order_by('date_added')
+            c = chats.objects.all().order_by('-date_added')
 
             jsonObjRoot = { "messages": [], 'error':''}
             for i in c:
@@ -100,6 +100,7 @@ class MessageHistory(View):
                 i.message_type=mtype
                 i.flag=1
                 i.email=email
+                i.date_modified=datetime.datetime.now()
                 i.save()
             # listname = "chat_list_"+str(user.user_id)
             # cursor = connection.cursor()  
@@ -128,7 +129,7 @@ class chatlist(View):
             # cursor.execute('''SELECT * FROM ''' + cln + ''' ORDER BY date_modified DESC;''')
             # cl = cursor.fetchall()
             # print(cl)
-            cl = ChatList.objects.filter(user_id=user.user_id).order_by('date_modified')
+            cl = ChatList.objects.filter(user_id=user.user_id).order_by('-date_modified')
             # print(cl)
             jsonObjRoot = { "chats": [],'error':''}
             for i in cl:
