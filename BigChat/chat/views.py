@@ -43,7 +43,7 @@ class MessageHistory(View):
             user = Users.objects.get(token=token)
             # listname = "chat_list_"+str(user.user_id)
             cl = ChatList.objects.filter(user_id=user.user_id, chat_id=chatId)
-            for i in cl: 
+            for i in cl:
                 i.flag = 0
                 i.save()
 
@@ -103,7 +103,7 @@ class MessageHistory(View):
                 i.date_modified=datetime.datetime.now()
                 i.save()
             # listname = "chat_list_"+str(user.user_id)
-            # cursor = connection.cursor()  
+            # cursor = connection.cursor()
             # cursor.execute('''UPDATE '''+listname+''' SET message=\''''+message+'''\', '''+'''message_type='''+str(mtype)+''', flag=1, date_modified=NOW() WHERE chat_id=\''''+chatId+'''\';''')
             chat = chatModel(chatId)
             msgn = chat(user_email=email, message=message, message_type=mtype, user_id=user.user_id)
