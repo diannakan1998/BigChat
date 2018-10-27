@@ -1,7 +1,7 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 
 # Create your views here.
-import requests
+# import requests
 from .models import Contact
 from auth.models import Users
 # from django.utils import timezone

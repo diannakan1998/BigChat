@@ -1,4 +1,4 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 
 # Create your views here.
 import requests, json
@@ -6,7 +6,7 @@ import requests, json
 
 # from django.db import IntegrityError
 # from django.core import serializers
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+# from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
 # from django.db import connection

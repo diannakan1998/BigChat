@@ -1,21 +1,21 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 
 # Create your views here.
-import requests
-import json
+# import requests
+# import json
 import datetime
 
 
 # from django.core import serializers
-from django.core.exceptions import ObjectDoesNotExist
+# from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.views.generic import View
-from django.core import serializers
+# from django.core import serializers
 # from django.utils import timezone
 
 from auth.models import Users, ChatList
 from .models import chatModel
-from django.db import connection
+# from django.db import connection
 
 
 def index(request):
