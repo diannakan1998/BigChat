@@ -8,7 +8,7 @@ import datetime
 
 # from django.core import serializers
 # from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
 # from django.core import serializers
 # from django.utils import timezone
