@@ -20,7 +20,7 @@ class addFriends(View):
         return JsonResponse(friendController(request, "remove"))
 
 
-def friendController(request, type):
+def friendController(request, requestType):
      token = request.GET.get("token")
      email = request.GET.get("email")
      friendEmail = request.GET.get("friendEmail")
@@ -35,10 +35,10 @@ def friendController(request, type):
          contacts = Contact(user_id=user_id)
          contactsFriend = Contact(user_id=friend_id)
 
-         if type == "add":
+         if requestType == "add":
              addFriend(contacts, friend_id)
              addFriend(contactsFriend, user_id)
-         elif type == "remove":
+         elif requestType == "remove":
              removeFriend(contacts, friend_id)
              removeFriend(contactsFriend, user_id)
          else:
