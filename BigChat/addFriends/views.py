@@ -47,9 +47,9 @@ def friendController(request, type):
          contacts.save()
          contactsFriend.save()
 
-         return {"success" : "Added Friend"}
+         return {"success" : 200}
      except Exception:
-         return {"error" : "Failed to add Friend"}
+         return {"error" : "Failed to modify contacts"}
 
 
 def addFriend(contacts, friend_id):
