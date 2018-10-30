@@ -250,7 +250,6 @@ def findUser(email, token):
 
 
 def updateToken(name, email, app_id, old_token, new_token, authType):
-    # TODO: implement
     # Get Users...
      try:
          status = auth(name, email, app_id, new_token, authType)
