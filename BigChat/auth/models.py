@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.validators import EmailValidator
-# from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
 
@@ -10,6 +10,8 @@ class Users(models.Model):
      user_id = models.AutoField(primary_key=True)
      token = models.CharField(max_length=255, unique=True, blank=False)
      chat_list_id = models.TextField(default="")
+     user_name = models.TextField(blank=True)
+     profile_img = ArrayField(models.BinaryField(), blank=True, null=True)
 
      class Meta:
          db_table = 'myAuth_users'

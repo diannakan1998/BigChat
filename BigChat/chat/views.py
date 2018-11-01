@@ -6,12 +6,8 @@
 import datetime
 
 
-# from django.core import serializers
-# from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
-# from django.core import serializers
-# from django.utils import timezone
 
 from auth.models import Users, ChatList
 from .models import chatModel
@@ -23,14 +19,6 @@ def index(request):
     # cursor.execute(''' ''')
     return HttpResponse("chat POST")
 
-
-# class ChatList(View):
-
-#     def get(self, requests):
-#          return HttpResponse("ChatList GET")
-
-#     def post(self, requests):
-#          return HttpResponse("ChatList POST")
 
 
 class MessageHistory(View):
@@ -49,19 +37,20 @@ class MessageHistory(View):
 
             # cursor = connection.cursor()
             # cursor.execute('''UPDATE ''' + listname + ''' SET flag=0 WHERE chat_id = \''''+ chatId + '''\';''')
-            print(user.user_id)
+            # print(user.user_id)
             chats = chatModel(chatId)
-            print(chatId)
+            # print(chatId)
             c = chats.objects.all().order_by('-date_added')
 
             jsonObjRoot = { "messages": [], 'error':''}
             for i in c:
                 juser = {"user_email" :1, "name": 1}
-                jsonObj = { "_id": 1, "user" : juser, "message": 1, "type": 1, "time": 1}
+                jsonObj = { "_id": 1, "user" : juser, "message": 1, "media":1,"type": 1, "time": 1}
                 jsonObj['_id'] = i.id
                 juser['user_email'] = i.user_email
                 juser['name'] = i.user_email
                 jsonObj['user'] = juser
+                jsonObj['media'] = i.media
                 jsonObj['message'] = i.message
                 jsonObj['type'] = i.message_type
                 # print(i.date_added.date())
@@ -74,7 +63,7 @@ class MessageHistory(View):
                 jsonObj['time'] = i.date_added
                 # jsonObj['time'] = i.date_added.
                 jsonObjRoot["messages"].append(jsonObj)
-            print(jsonObjRoot)
+            # print(jsonObjRoot)
             return JsonResponse(jsonObjRoot)
         except Exception as e:
             print(e)
@@ -87,9 +76,10 @@ class MessageHistory(View):
         chatId = requests.GET.get('chatId')
         mtype = requests.GET.get('type')
         email = requests.GET.get('email')
+        media = requests.GET.get('media')
         print(message)
         print(token)
-        print(chatId)
+        print(media)
         print(mtype)
         try:
             user = Users.objects.get(token=token)
@@ -106,7 +96,7 @@ class MessageHistory(View):
             # cursor = connection.cursor()
             # cursor.execute('''UPDATE '''+listname+''' SET message=\''''+message+'''\', '''+'''message_type='''+str(mtype)+''', flag=1, date_modified=NOW() WHERE chat_id=\''''+chatId+'''\';''')
             chat = chatModel(chatId)
-            msgn = chat(user_email=email, message=message, message_type=mtype, user_id=user.user_id)
+            msgn = chat(user_email=email, message=message, message_type=mtype, media=media, user_id=user.user_id)
             msgn.save()
             return JsonResponse({'success' : 'send success', 'error':''})
         except Exception as e:
@@ -121,26 +111,10 @@ class chatlist(View):
         token = requests.GET.get('token')
         try:
             user = Users.objects.get(token=token)
-            # cln = "chat_list_"+str(user.user_id)
-            # listm = getChatListModel("chat_list")
-            print(user.user_id)
-
-            # cursor = connection.cursor()
-            # cursor.execute('''SELECT * FROM ''' + cln + ''' ORDER BY date_modified DESC;''')
-            # cl = cursor.fetchall()
-            # print(cl)
             cl = ChatList.objects.filter(user_id=user.user_id).order_by('-date_modified')
             # print(cl)
             jsonObjRoot = { "chats": [],'error':''}
             for i in cl:
-                # id
-                # table name
-                # message
-                # message mtyp
-                # date date_added
-                # date_modified
-                # flag
-                # name
                 jsonObj = { "chatId" : 1, "name": 1, "message": 1, "type": 1, "time": 1, "flag": 0}
                 jsonObj['chatId'] = i.chat_id
                 jsonObj['message'] = i.message

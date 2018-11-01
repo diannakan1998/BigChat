@@ -31,9 +31,9 @@ CREATE TABLE contact_list (
 
 CREATE TABLE chat_members (
 	chat_id SERIAL,
-	member_id integer[] DEFAULT NULL,
-	date_added TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-	date_modified TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+	member_id bigint[] DEFAULT NULL,
+	date_added TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
+	date_modified TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
 	PRIMARY KEY (chat_id)
 );
 
@@ -43,3 +43,20 @@ CREATE TABLE friend_token (
 	date_added TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 	PRIMARY KEY (user_id)
 );
+
+
+create table chat (
+	id SERIAL,
+	chat_id text not null,
+	user_id BIGINT not null,
+	user_name text DEFAULT null,
+	user_email text not null,
+	message text DEFAULT null,
+	media bytea DEFAULT null,
+	message_type integer DEFAULT 0,
+	date_added TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
+	date_modified TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
+	PRIMARY KEY (id)	
+);
+
+
