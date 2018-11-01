@@ -85,11 +85,11 @@ def friendController(request, requestType):
              friendRequests = None
              friend_friendRequests = None
 
-             if FriendRequests.objects.filter(user_id=user_id).exists() not True:
+             if not FriendRequests.objects.filter(user_id=user_id).exists():
                  friendRequests = FriendRequests(user_id=user_id)
                  friendRequests.save()
 
-             if friend_friendRequests.objects.filter(user_id=friend_id).exists() not True:
+             if not friend_friendRequests.objects.filter(user_id=friend_id).exists():
                  friend_friendRequests = FriendRequests(user_id=friend_id)
                  friend_friendRequests.save()
 
