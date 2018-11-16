@@ -48,15 +48,6 @@ class updateUserToken(View):
         else:
             return JsonResponse(status)
 
-    @classmethod
-    def put(self, request):
-
-        status = processUpdateTokenRequest(request)
-        if status is True:
-            return HttpResponse("updateUserToken GET")
-        else:
-            return JsonResponse(status)
-
 
 def processAuthRequest(request):
      name = request.GET.get("name")
@@ -68,8 +59,10 @@ def processAuthRequest(request):
      status = auth(name, email, app_id, token, authType)
 
      if 'success' in status:
-        return checkForNewUser(email, token)
+         print ("auth success")
+         return checkForNewUser(email, token)
      else:
+         print ("auth fail")
          return status
 
 
@@ -182,14 +175,14 @@ def auth(name, email, app_id, token, authType):
              if 'error' in jsonReq_app_id:
                  return {"error": jsonReq_app_id['error']['message'] }
 
-
+             # print ("Test0")
              f = open('auth/facebook_key.json')
              facebookKey = json.load(f)
 
              f = open('auth/facebook_key.json.old')
              facebookKeyOld = json.load(f)
-
-             jsonReq.email = jsonReq.email.replace("\u0040", "@")
+             # print ("Test1")
+             jsonReq['email'] = jsonReq['email'].replace("\u0040", "@")
 
              print("Facebook auth 1")
              if 'id' in jsonReq_app_id and 'KEY' in facebookKey and 'email' in jsonReq and 'KEY' in facebookKeyOld:
@@ -219,7 +212,8 @@ def auth(name, email, app_id, token, authType):
          else:
              return {'error': "Authenticate GET - Invalid Authentication Type."}
 
-     except Exception:
+     except Exception as e:
+         print (e)
          return {"error": "Caught an exception..."}
 
 
@@ -229,6 +223,7 @@ def checkForNewUser(email, token):
     user_exists = findUser(email, token)
 
     if user_exists == False:
+        print ("adding new user...")
         return addUser(email, token)
     else:
         return {"success": "user exists", "newUser": "false"}
@@ -239,11 +234,15 @@ def findUser(email, token):
     # Get Users...
      try:
          # Throws an expection if zero or more than one found
+         print ("finding user...")
          user = Users.objects.get(email=email)
          user.token = token
          user.save()
+         print ("updated token...")
          return True
-     except Exception:
+     except Exception as e:
+         print("Caught an exp in findUser")
+         print (e)
          return False
 
 
@@ -273,9 +272,9 @@ def addUser(email, token):
          print ( "user: ")
 
          user_id = user.user_id
-         user.chat_list_id = "chat_list_" + str(user_id)
+         # user.chat_list_id = "chat_list_" + str(user_id)
          user.save()
-         print (user.chat_list_id)
+         # print (user.chat_list_id)
          # Creating the chat list table
          # cursor = connection.cursor()
          # cursor.execute("CREATE TABLE "+ user.chat_list_id +" ( id SERIAL, chat_id text NOT NULL, message text DEFAULT NULL, message_type integer DEFAULT NULL, date_added TIMESTAMP DEFAULT NULL, date_modified TIMESTAMP DEFAULT NULL, flag integer DEFAULT 0, name text DEFAULT NULL, PRIMARY KEY(id))", [user.chat_list_id])

@@ -3,19 +3,19 @@ from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
 
-def chatModel(chatId):
-    class chat(models.Model):
-        user_id = models.IntegerField()
-        user_name = models.CharField()
-        user_email = models.CharField()
-        message = models.CharField()
-        media = ArrayField(models.BinaryField())
-        message_type = models.IntegerField()
-        date_added = models.DateTimeField(auto_now=True)
-        date_modified = models.DateTimeField(auto_now=True)
+class chat(models.Model):
+    chat_id = models.CharField(max_length=255)
+    user_id = models.BigIntegerField()
+    user_name = models.CharField(max_length=255)
+    user_email = models.CharField(max_length=255)
+    message = models.TextField()
+    media = models.TextField()
+    # mediab = ArrayField(models.BinaryField())
+    message_type = models.IntegerField()
+    date_added = models.DateTimeField(auto_now=True)
+    date_modified = models.DateTimeField(auto_now=True)
 
-        class Meta:
-            db_table = chatId
+    class Meta:
+        db_table = "chat"
 
-    return chat
 

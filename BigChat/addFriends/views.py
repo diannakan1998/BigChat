@@ -1,11 +1,12 @@
 # from django.shortcuts import render
+import datetime
 
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
 
-from auth.models import Users
+from auth.models import Users, ChatList
 from Contact.models import Contact
-from addFriends.models import FriendRequest
+from addFriends.models import FriendRequest, chatMember
 
 def index(request):
     return HttpResponse("AddFriends Index")
@@ -30,8 +31,15 @@ def getFriendRequests(request):
     token = request.GET.get("token")
     print ("GET")
     try:
+        print ("looking for user: " + token)
         user = Users.objects.get(token=token)
-        friendRequests = FriendRequest.objects.get(user_id=user.user_id)
+        print ("user found")
+        friendRequests = None
+        if not FriendRequest.objects.filter(user_id=user.user_id).exists():
+            friendRequests = FriendRequest(user_id=user.user_id)
+            friendRequests.save()
+        else:
+            friendRequests = FriendRequest.objects.get(user_id=user.user_id)
 
         friendRequests_status = {"success": 200, "sent": [], "recieved": []}
 
@@ -100,13 +108,26 @@ def friendController(request, requestType):
                  if friendEmail in friendRequests.friend_requests_emails_recieved and email in friend_friendRequests.friend_requests_emails_sent:
                      addFriend(contacts, friend_id)
                      addFriend(contactsFriend, user_id)
+                     # create new chat with 2 members
+                     chatmem = chatMember(member_id=[user_id,friend_id])
+                     chatmem.save()
 
+                     cm = chatMember.objects.filter(member_id__contains=[user_id, friend_id]).filter(member_id__len=2).order_by('-date_added')[:1]
+                     cm = cm[0]
+                     chatId = "chat_table_" + str(cm.id)
+                     # add each other to chatlist
+                     chatlist =  ChatList(user_id= user_id, chat_id=chatId, message="New Friend!", message_type=1, flag=1, name=friendEmail, date_added=datetime.datetime.now(), date_modified=datetime.datetime.now())
+                     chatlist.save()
+                     print(chatId)
+                     chatlist =  ChatList(user_id= friend_id, chat_id=chatId, message="New Friend!", message_type=1, flag=1, name=email, date_added=datetime.datetime.now(), date_modified=datetime.datetime.now())
+                     chatlist.save()
                      friendRequests.friend_requests_emails_recieved.remove(friendEmail)
                      friend_friendRequests.friend_requests_emails_sent.remove(email)
 
                  else:
                      return {"error": "Trying to add user who doesn't want to add you..."}
-             except Exception:
+             except Exception as e:
+                 print(e)
                  return {"error": "FriendRequests entry does not exist for one or both of the users in question."}
          elif requestType == "remove":
              print ("Removing...")

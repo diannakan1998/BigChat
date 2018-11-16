@@ -91,6 +91,8 @@ INSTALLED_APPS = [
     'auth.apps.AuthConfig',
     'Contact.apps.ContactConfig',
     'chat.apps.ChatConfig',
+    'addFriends.apps.AddfriendsConfig',
+    'binaryTesting.apps.BinarytestingConfig',
 
 ]
 

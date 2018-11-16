@@ -10,7 +10,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
 
 from auth.models import Users, ChatList
-from .models import chatModel
+from .models import chat
 # from django.db import connection
 
 
@@ -38,9 +38,9 @@ class MessageHistory(View):
             # cursor = connection.cursor()
             # cursor.execute('''UPDATE ''' + listname + ''' SET flag=0 WHERE chat_id = \''''+ chatId + '''\';''')
             # print(user.user_id)
-            chats = chatModel(chatId)
+            # chats = chatModel(chatId)
             # print(chatId)
-            c = chats.objects.all().order_by('-date_added')
+            c = chat.objects.filter(chat_id=chatId).order_by('-date_added')
 
             jsonObjRoot = { "messages": [], 'error':''}
             for i in c:
@@ -63,7 +63,7 @@ class MessageHistory(View):
                 jsonObj['time'] = i.date_added
                 # jsonObj['time'] = i.date_added.
                 jsonObjRoot["messages"].append(jsonObj)
-            # print(jsonObjRoot)
+            print(jsonObjRoot)
             return JsonResponse(jsonObjRoot)
         except Exception as e:
             print(e)
@@ -95,8 +95,8 @@ class MessageHistory(View):
             # listname = "chat_list_"+str(user.user_id)
             # cursor = connection.cursor()
             # cursor.execute('''UPDATE '''+listname+''' SET message=\''''+message+'''\', '''+'''message_type='''+str(mtype)+''', flag=1, date_modified=NOW() WHERE chat_id=\''''+chatId+'''\';''')
-            chat = chatModel(chatId)
-            msgn = chat(user_email=email, message=message, message_type=mtype, media=media, user_id=user.user_id)
+            # chat = chatModel(chatId)
+            msgn = chat(chat_id=chatId, user_email=email, message=message, message_type=mtype, media=media, user_id=user.user_id)
             msgn.save()
             return JsonResponse({'success' : 'send success', 'error':''})
         except Exception as e:
