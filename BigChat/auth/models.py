@@ -17,9 +17,6 @@ class Users(models.Model):
          db_table = 'myAuth_users'
 
 
-
-
-
 class ChatList(models.Model):
     user_id = models.BigIntegerField()
     chat_id = models.TextField(default="")
@@ -46,6 +43,3 @@ class ChatList(models.Model):
 #          db_table = 'chatTable'
 
 # ChatList Id... needs to be unique
-
-
-

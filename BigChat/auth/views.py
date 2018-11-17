@@ -27,20 +27,10 @@ class Authenticate(View):
     def post(self, request):
         return JsonResponse(processAuthRequest(request))
 
-
 class updateUserToken(View):
 
     @classmethod
-    def get(self, request):
-
-        status = processUpdateTokenRequest(request)
-        if status is True:
-            return HttpResponse("updateUserToken GET")
-        else:
-            return JsonResponse(status)
-
-    @classmethod
-    def post(self, request):
+    def put(self, request):
 
         status = processUpdateTokenRequest(request)
         if status is True:
