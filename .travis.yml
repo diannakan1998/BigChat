@@ -7,7 +7,7 @@ env:
 install:
       - python3 -m pip install -r BigChat/requirements.txt
       - python3 -m pip install coverage
-      - python3 -m pip install python-codacy-coverage
+      - python3 -m pip install codacy-coverage
 script:
       - coverage run --source='BigChat/' manage.py test
       - coverage xml
