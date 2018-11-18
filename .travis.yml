@@ -1,9 +1,10 @@
 language: python
-    python:
+
+python:
       - "3.6"
-    env:
+env:
       - DJANGO_VERSION=2.1.2
-    install:
+install:
       - python3 -m pip install -r BigChat/requirements.txt
-    script:
+script:
       - python3 BigChat/manage.py test
