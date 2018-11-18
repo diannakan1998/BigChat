@@ -13,7 +13,7 @@ class FriendRequest(models.Model):
 
 class chatMember(models.Model):
     member_id =  ArrayField(models.BigIntegerField())
-    date_added = models.DateTimeField(auto_now=True)
+    date_added = models.DateTimeField()
     date_modified = models.DateTimeField(auto_now=True)
 
     class Meta:

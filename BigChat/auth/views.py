@@ -23,14 +23,14 @@ class Authenticate(View):
     @classmethod
     def get(self, request):
         return JsonResponse(processAuthRequest(request))
-    @classmethod
-    def post(self, request):
-        return JsonResponse(processAuthRequest(request))
+    # @classmethod
+    # def post(self, request):
+    #     return JsonResponse(processAuthRequest(request))
 
 class updateUserToken(View):
 
     @classmethod
-    def put(self, request):
+    def post(self, request):
 
         status = processUpdateTokenRequest(request)
         if status is True:
@@ -49,21 +49,21 @@ def processAuthRequest(request):
      status = auth(name, email, app_id, token, authType)
 
      if 'success' in status:
-         print ("auth success")
+         # print ("auth success")
          return checkForNewUser(email, token)
      else:
-         print ("auth fail")
+         # print ("auth fail")
          return status
 
 
 
 def processUpdateTokenRequest(request):
-    name = request.GET.get("name")
-    email = request.GET.get("email")
-    app_id = request.GET.get("app_id")
-    old_token = request.GET.get("old_token")
-    new_token = request.GET.get("new_token")
-    authType = request.GET.get("authType")
+    name = request.POST.get("name")
+    email = request.POST.get("email")
+    app_id = request.POST.get("app_id")
+    old_token = request.POST.get("old_token")
+    new_token = request.POST.get("new_token")
+    authType = request.POST.get("authType")
 
     if old_token is None:
          return {'error': 'Cannot process with no old token'}
@@ -79,11 +79,11 @@ def auth(name, email, app_id, token, authType):
      #  if name is None:
         #  return { 'error' : 'Cannot process with no name' }
 
-     print (name)
-     print (email)
-     print (app_id)
-     print (token)
-     print (authType)
+     # print (name)
+     # print (email)
+     # print (app_id)
+     # print (token)
+     # print (authType)
 
      if email is None:
          return { 'error' : 'Cannot process with no email' }
@@ -152,8 +152,8 @@ def auth(name, email, app_id, token, authType):
              jsonReq = json.loads(req.text)
              jsonReq_app_id = json.loads(req_app_id.text)
 
-             print(jsonReq)
-             print(jsonReq_app_id)
+             # print(jsonReq)
+             # print(jsonReq_app_id)
 
              # TODO: Remove
              #  return {"success": "BigChat true"}
@@ -174,7 +174,7 @@ def auth(name, email, app_id, token, authType):
              # print ("Test1")
              jsonReq['email'] = jsonReq['email'].replace("\u0040", "@")
 
-             print("Facebook auth 1")
+             # print("Facebook auth 1")
              if 'id' in jsonReq_app_id and 'KEY' in facebookKey and 'email' in jsonReq and 'KEY' in facebookKeyOld:
                  if (jsonReq_app_id['id'] == facebookKey['KEY'] or jsonReq_app_id['id'] == facebookKeyOld['KEY']) and jsonReq['email'] == email:
                      return {"success": "BigChat true"}
@@ -203,7 +203,7 @@ def auth(name, email, app_id, token, authType):
              return {'error': "Authenticate GET - Invalid Authentication Type."}
 
      except Exception as e:
-         print (e)
+         # print (e)
          return {"error": "Caught an exception..."}
 
 
@@ -213,7 +213,7 @@ def checkForNewUser(email, token):
     user_exists = findUser(email, token)
 
     if user_exists == False:
-        print ("adding new user...")
+        # print ("adding new user...")
         return addUser(email, token)
     else:
         return {"success": "user exists", "newUser": "false"}
@@ -224,15 +224,15 @@ def findUser(email, token):
     # Get Users...
      try:
          # Throws an expection if zero or more than one found
-         print ("finding user...")
+         # print ("finding user...")
          user = Users.objects.get(email=email)
          user.token = token
          user.save()
-         print ("updated token...")
+         # print ("updated token...")
          return True
      except Exception as e:
-         print("Caught an exp in findUser")
-         print (e)
+         # print("Caught an exp in findUser")
+         # print (e)
          return False
 
 
@@ -256,10 +256,10 @@ def addUser(email, token):
     # Adds Users...
      try:
          # Adding the user entry
-         print ( "user: ")
+         # print ( "user: ")
          user = Users(email=email, token=token)
          user.save()
-         print ( "user: ")
+         # print ( "user: ")
 
          user_id = user.user_id
          # user.chat_list_id = "chat_list_" + str(user_id)
@@ -272,5 +272,5 @@ def addUser(email, token):
          return {'success': "Succesfully added new user"}
 
      except Exception as exp:
-         print (exp)
+         # print (exp)
          return {'error': "Failed to add user."}

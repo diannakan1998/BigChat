@@ -1,7 +1,8 @@
 # from django.shortcuts import render
-import datetime
+import datetime, json
 
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, QueryDict
+
 from django.views.generic import View
 
 from auth.models import Users, ChatList
@@ -29,11 +30,11 @@ class FriendRequests(View):
 
 def getFriendRequests(request):
     token = request.GET.get("token")
-    print ("GET")
+    # print ("GET")
     try:
-        print ("looking for user: " + token)
+        # print ("looking for user: " + token)
         user = Users.objects.get(token=token)
-        print ("user found")
+        # print ("user found")
         friendRequests = None
         if not FriendRequest.objects.filter(user_id=user.user_id).exists():
             friendRequests = FriendRequest(user_id=user.user_id)
@@ -43,8 +44,8 @@ def getFriendRequests(request):
 
         friendRequests_status = {"success": 200, "sent": [], "recieved": []}
 
-        print (friendRequests)
-        print (user)
+        # print (friendRequests)
+        # print (user)
         if friendRequests.friend_requests_emails_sent is not None:
             for i in friendRequests.friend_requests_emails_sent:
                 friendRequests_status["sent"].append(i)
@@ -53,41 +54,59 @@ def getFriendRequests(request):
             for i in friendRequests.friend_requests_emails_recieved:
                 friendRequests_status["recieved"].append(i)
 
-        print (friendRequests_status)
+        # print (friendRequests_status)
         return friendRequests_status
     except Exception as e:
-        print (e)
+        # print (e)
         return {"error": "User or FriendRequests not found"}
 
 
 
 def friendController(request, requestType):
-     token = request.GET.get("token")
-     email = request.GET.get("email")
-     friendEmail = request.GET.get("friendEmail")
+     token = None
+     email = None
+     friendEmail = None
 
-     print ("OTHERS")
+     if requestType is "sendAdd":
+          token = request.POST.get("token")
+          email = request.POST.get("email")
+          friendEmail = request.POST.get("friendEmail")
+     else:
+         try:
+             jsonObj = json.loads(request.body)
+             token = jsonObj['token']
+             email = jsonObj['email']
+             friendEmail = jsonObj['friendEmail']
+         except Exception as e:
+             return {"error" : "Failed to parse data"}
+
+     # print (token)
+     # print(email)
+     # print(friendEmail)
+
+     # print ("OTHERS")
 
      try:
-         print ("Inside TRY")
+         # print ("Inside TRY")
          user = Users.objects.get(email=email, token=token)
          friend = Users.objects.get(email=friendEmail)
-         print ("Got users...")
+         # print ("Got users...")
 
          user_id = user.user_id
          friend_id = friend.user_id
-         print ("Got ids...")
+         # print ("Got ids...")
 
          if not Contact.objects.filter(user_id=user_id).exists():
-             contacts = Contact(user_id=user_id)
+             contacts = Contact(user_id=user_id, date_added= datetime.datetime.now())
              contacts.save()
 
          if not Contact.objects.filter(user_id=friend_id).exists():
-             contactsFriend = Contact(user_id=friend_id)
+             contactsFriend = Contact(user_id=friend_id, date_added= datetime.datetime.now())
              contactsFriend.save()
 
          contacts = Contact.objects.get(user_id=user_id)
          contactsFriend = Contact.objects.get(user_id=friend_id)
+         # print ("Got contacts")
 
          if not FriendRequest.objects.filter(user_id=user_id).exists():
              friendRequests = FriendRequest(user_id=user_id)
@@ -100,16 +119,16 @@ def friendController(request, requestType):
          friendRequests = FriendRequest.objects.get(user_id=user_id)
          friend_friendRequests = FriendRequest.objects.get(user_id=friend_id)
 
-         print ("Got data...")
+         # print ("Got data...")
 
          if requestType == "add":
-             print ("Adding...")
+             # print ("Adding...")
              try:
                  if friendEmail in friendRequests.friend_requests_emails_recieved and email in friend_friendRequests.friend_requests_emails_sent:
                      addFriend(contacts, friend_id)
                      addFriend(contactsFriend, user_id)
                      # create new chat with 2 members
-                     chatmem = chatMember(member_id=[user_id,friend_id])
+                     chatmem = chatMember(member_id=[user_id,friend_id], date_added= datetime.datetime.now())
                      chatmem.save()
 
                      cm = chatMember.objects.filter(member_id__contains=[user_id, friend_id]).filter(member_id__len=2).order_by('-date_added')[:1]
@@ -118,7 +137,7 @@ def friendController(request, requestType):
                      # add each other to chatlist
                      chatlist =  ChatList(user_id= user_id, chat_id=chatId, message="New Friend!", message_type=1, flag=1, name=friendEmail, date_added=datetime.datetime.now(), date_modified=datetime.datetime.now())
                      chatlist.save()
-                     print(chatId)
+                     # print(chatId)
                      chatlist =  ChatList(user_id= friend_id, chat_id=chatId, message="New Friend!", message_type=1, flag=1, name=email, date_added=datetime.datetime.now(), date_modified=datetime.datetime.now())
                      chatlist.save()
                      friendRequests.friend_requests_emails_recieved.remove(friendEmail)
@@ -127,10 +146,10 @@ def friendController(request, requestType):
                  else:
                      return {"error": "Trying to add user who doesn't want to add you..."}
              except Exception as e:
-                 print(e)
+                 # print(e)
                  return {"error": "FriendRequests entry does not exist for one or both of the users in question."}
          elif requestType == "remove":
-             print ("Removing...")
+             # print ("Removing...")
 
              # TODO: remove chat history or keep it?
              removeFriend(contacts, friend_id)
@@ -139,20 +158,20 @@ def friendController(request, requestType):
              friend_friendRequests.friend_requests_emails_sent.remove(email)
 
          elif requestType == "sendAdd":
-             print ("Sending add...")
+             # print ("Sending add...")
 
-             print ("Checking if they exist...")
+             # print ("Checking if they exist...")
              if not FriendRequest.objects.filter(user_id=user_id).exists():
-                 print("creating friend request...")
+                 # print("creating friend request...")
                  friendRequests = FriendRequest(user_id=user_id)
                  friendRequests.save()
 
              if not FriendRequest.objects.filter(user_id=friend_id).exists():
-                 print("creating friend request...")
+                 # print("creating friend request...")
                  friend_friendRequests = FriendRequest(user_id=friend_id)
                  friend_friendRequests.save()
 
-             print ("Created requests if null")
+             # print ("Created requests if null")
              if friendRequests.friend_requests_emails_sent:
                  if friendEmail not in friendRequests.friend_requests_emails_sent:
                      friendRequests.friend_requests_emails_sent.append(friendEmail)
@@ -175,7 +194,7 @@ def friendController(request, requestType):
 
          return {"success" : 200}
      except Exception as e:
-         print (e)
+         # print (e)
          return {"error" : "Failed to modify contacts"}
 
 def addFriend(contacts, friend_id):
