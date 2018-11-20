@@ -135,10 +135,10 @@ def friendController(request, requestType):
                      cm = cm[0]
                      chatId = "chat_table_" + str(cm.id)
                      # add each other to chatlist
-                     chatlist =  ChatList(user_id= user_id, chat_id=chatId, message="New Friend!", message_type=1, flag=1, name=friendEmail, date_added=datetime.datetime.now(), date_modified=datetime.datetime.now())
+                     chatlist =  ChatList(user_id= user_id, chat_id=chatId, message="New Friend!", message_type=1, flag=1, name=friend.user_name, date_added=datetime.datetime.now(), date_modified=datetime.datetime.now())
                      chatlist.save()
                      # print(chatId)
-                     chatlist =  ChatList(user_id= friend_id, chat_id=chatId, message="New Friend!", message_type=1, flag=1, name=email, date_added=datetime.datetime.now(), date_modified=datetime.datetime.now())
+                     chatlist =  ChatList(user_id= friend_id, chat_id=chatId, message="New Friend!", message_type=1, flag=1, name=user.user_name, date_added=datetime.datetime.now(), date_modified=datetime.datetime.now())
                      chatlist.save()
                      friendRequests.friend_requests_emails_recieved.remove(friendEmail)
                      friend_friendRequests.friend_requests_emails_sent.remove(email)
@@ -202,11 +202,14 @@ def addFriend(contacts, friend_id):
      if contacts.friend_id:
          if friend_id not in contacts.friend_id:
              contacts.friend_id.append(friend_id)
+             contacts.save()
      else:
          contacts.friend_id = [friend_id]
+         contacts.save()
 
 
 def removeFriend(contacts, friend_id):
      # NULL check
      if contacts.friend_id and friend_id in contacts.friend_id:
          contacts.friend_id.remove(friend_id)
+         contacts.save()

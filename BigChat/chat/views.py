@@ -11,6 +11,7 @@ from django.views.generic import View
 
 from auth.models import Users, ChatList
 from .models import chat
+from addFriends.models import chatMember
 # from django.db import connection
 
 
@@ -39,11 +40,13 @@ class MessageHistory(View):
             # print(user.user_id)
             jsonObjRoot = { "messages": [], 'error':''}
             for i in c:
-                juser = {"user_email" :1, "name": 1}
+                juser = {"user_email" :1, "name": 1, "image":0}
                 jsonObj = { "_id": 1, "user" : juser, "message": 1, "media":1,"type": 1, "time": 1}
                 jsonObj['_id'] = i.id
-                juser['user_email'] = i.user_email
-                juser['name'] = i.user_name
+                u = Users.objects.get(user_id=i.user_id)
+                juser['user_email'] = u.email
+                juser['name'] = u.user_name
+                juser['image'] = u.profile_img
                 jsonObj['user'] = juser
                 jsonObj['media'] = i.media
                 jsonObj['message'] = i.message
@@ -61,7 +64,7 @@ class MessageHistory(View):
             # print(jsonObjRoot)
             return JsonResponse(jsonObjRoot)
         except Exception as e:
-            # print(e)
+            print(e)
             return JsonResponse({'error' : 'chat error'})
 
     @classmethod
@@ -86,10 +89,6 @@ class MessageHistory(View):
             email = requests.GET.get('email')
         if media is None:
             media = requests.GET.get('media')
-        # print(message)
-        # print(token)
-        # print(chatId)
-        # print(mtype)
         try:
             user = Users.objects.get(token=token)
             # print(user.chat_list_id)
@@ -102,11 +101,11 @@ class MessageHistory(View):
                 i.date_modified=datetime.datetime.now()
                 i.save()
 
-            msgn = chat(chat_id=chatId, user_email=email, message=message, message_type=mtype, media=media, user_id=user.user_id)
+            msgn = chat(chat_id=chatId, user_name=user.user_name, user_email=email, message=message, message_type=mtype, media=media, user_id=user.user_id)
             msgn.save()
             return JsonResponse({'success' : 'send success', 'error':''})
         except Exception as e:
-            # print(e)
+            print(e)
             return JsonResponse({'error' : 'chat error'})
 
 
@@ -122,15 +121,28 @@ class chatlist(View):
             # print(cl)
             jsonObjRoot = { "chats": [],'error':''}
             for i in cl:
-                jsonObj = { "chatId" : 1, "name": 1, "message": 1, "type": 1, "time": 1, "flag": 0}
+                jsonObj = { "chatId" : 0, "name": 0, "message": 0, "type": 1, "time": 0, "flag": 0, "image":0}
+                member = chatMember.objects.get(id=int(i.chat_id[11:])).member_id
+                friend = Users.objects.get(user_id=exclude(user.user_id, member)[0])
+                print(friend.user_id)
                 jsonObj['chatId'] = i.chat_id
                 jsonObj['message'] = i.message
                 jsonObj['type'] = i.message_type
                 jsonObj['time'] = i.date_modified
                 jsonObj['flag'] = i.flag
-                jsonObj['name'] = i.name
+                jsonObj['name'] = friend.user_name
+                jsonObj['image'] = friend.profile_img
                 jsonObjRoot["chats"].append(jsonObj)
             return JsonResponse(jsonObjRoot)
         except Exception as e:
-            # print(e)
+            print(e)
             return JsonResponse({'error' : 'chatlist error'})
+
+
+
+def exclude(n, arr):
+    for i in arr:
+        if i==n:
+            arr.remove(n)
+            return arr
+    return arr

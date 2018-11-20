@@ -216,7 +216,7 @@ def checkForNewUser(email, token):
         # print ("adding new user...")
         return addUser(email, token)
     else:
-        return {"success": "user exists", "newUser": "false"}
+        return {"success": "user exists", "newUser": 0}
 
 
 def findUser(email, token):
@@ -269,7 +269,7 @@ def addUser(email, token):
          # cursor = connection.cursor()
          # cursor.execute("CREATE TABLE "+ user.chat_list_id +" ( id SERIAL, chat_id text NOT NULL, message text DEFAULT NULL, message_type integer DEFAULT NULL, date_added TIMESTAMP DEFAULT NULL, date_modified TIMESTAMP DEFAULT NULL, flag integer DEFAULT 0, name text DEFAULT NULL, PRIMARY KEY(id))", [user.chat_list_id])
 
-         return {'success': "Succesfully added new user"}
+         return {'success': "Succesfully added new user","newUser": 1}
 
      except Exception as exp:
          # print (exp)
