@@ -5,8 +5,8 @@ from django.contrib.postgres.fields import ArrayField
 
 class Contact(models.Model):
     user_id = models.CharField(max_length=255, unique=True)
-    friend_id = ArrayField(models.CharField(max_length=255, unique=True, blank=False))
-    date_added = models.DateTimeField(auto_now=True)
+    friend_id = ArrayField(models.BigIntegerField(unique=True, blank=False), null=True)
+    date_added = models.DateTimeField()
     date_modified = models.DateTimeField(auto_now=True)
 
     class Meta:

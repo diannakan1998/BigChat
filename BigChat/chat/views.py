@@ -28,27 +28,22 @@ class MessageHistory(View):
         chatId = requests.GET.get('chatId')
         token = requests.GET.get('token')
         try:
+            # print(token)
             user = Users.objects.get(token=token)
-            # listname = "chat_list_"+str(user.user_id)
+            # print(user.user_id)
             cl = ChatList.objects.filter(user_id=user.user_id, chat_id=chatId)
             for i in cl:
                 i.flag = 0
                 i.save()
-
-            # cursor = connection.cursor()
-            # cursor.execute('''UPDATE ''' + listname + ''' SET flag=0 WHERE chat_id = \''''+ chatId + '''\';''')
-            # print(user.user_id)
-            # chats = chatModel(chatId)
-            # print(chatId)
             c = chat.objects.filter(chat_id=chatId).order_by('-date_added')
-
+            # print(user.user_id)
             jsonObjRoot = { "messages": [], 'error':''}
             for i in c:
                 juser = {"user_email" :1, "name": 1}
                 jsonObj = { "_id": 1, "user" : juser, "message": 1, "media":1,"type": 1, "time": 1}
                 jsonObj['_id'] = i.id
                 juser['user_email'] = i.user_email
-                juser['name'] = i.user_email
+                juser['name'] = i.user_name
                 jsonObj['user'] = juser
                 jsonObj['media'] = i.media
                 jsonObj['message'] = i.message
@@ -63,24 +58,38 @@ class MessageHistory(View):
                 jsonObj['time'] = i.date_added
                 # jsonObj['time'] = i.date_added.
                 jsonObjRoot["messages"].append(jsonObj)
-            print(jsonObjRoot)
+            # print(jsonObjRoot)
             return JsonResponse(jsonObjRoot)
         except Exception as e:
-            print(e)
+            # print(e)
             return JsonResponse({'error' : 'chat error'})
 
     @classmethod
     def post(self, requests):
-        message = requests.GET.get('message')
-        token = requests.GET.get('token')
-        chatId = requests.GET.get('chatId')
-        mtype = requests.GET.get('type')
-        email = requests.GET.get('email')
-        media = requests.GET.get('media')
-        print(message)
-        print(token)
-        print(media)
-        print(mtype)
+        # print(requests.json())
+        message = requests.POST.get('message')
+        token = requests.POST.get('token')
+        chatId = requests.POST.get('chatId')
+        mtype = requests.POST.get('type')
+        email = requests.POST.get('email')
+        media = requests.POST.get('media')
+
+        if message is None:
+            message = requests.GET.get('message')
+        if token is None:
+            token = requests.GET.get('token')
+        if chatId is None:
+            chatId = requests.GET.get('chatId')
+        if mtype is None:
+            mtype = requests.GET.get('type')
+        if email is None:
+            email = requests.GET.get('email')
+        if media is None:
+            media = requests.GET.get('media')
+        # print(message)
+        # print(token)
+        # print(chatId)
+        # print(mtype)
         try:
             user = Users.objects.get(token=token)
             # print(user.chat_list_id)
@@ -92,15 +101,12 @@ class MessageHistory(View):
                 i.email=email
                 i.date_modified=datetime.datetime.now()
                 i.save()
-            # listname = "chat_list_"+str(user.user_id)
-            # cursor = connection.cursor()
-            # cursor.execute('''UPDATE '''+listname+''' SET message=\''''+message+'''\', '''+'''message_type='''+str(mtype)+''', flag=1, date_modified=NOW() WHERE chat_id=\''''+chatId+'''\';''')
-            # chat = chatModel(chatId)
+
             msgn = chat(chat_id=chatId, user_email=email, message=message, message_type=mtype, media=media, user_id=user.user_id)
             msgn.save()
             return JsonResponse({'success' : 'send success', 'error':''})
         except Exception as e:
-            print(e)
+            # print(e)
             return JsonResponse({'error' : 'chat error'})
 
 
@@ -109,6 +115,7 @@ class chatlist(View):
     @classmethod
     def get(self, requests):
         token = requests.GET.get('token')
+        # print(token)
         try:
             user = Users.objects.get(token=token)
             cl = ChatList.objects.filter(user_id=user.user_id).order_by('-date_modified')
@@ -125,5 +132,5 @@ class chatlist(View):
                 jsonObjRoot["chats"].append(jsonObj)
             return JsonResponse(jsonObjRoot)
         except Exception as e:
-            print(e)
+            # print(e)
             return JsonResponse({'error' : 'chatlist error'})

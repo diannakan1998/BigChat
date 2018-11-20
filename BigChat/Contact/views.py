@@ -17,35 +17,27 @@ class Contacts(View):
     @classmethod
     def get(self, request):
         token = request.GET.get("token")
-        print(token)
+        # print(token)
         return JsonResponse(getContact(token))
-
-
-def addNewUser(token):
-    try:
-        Contact.objects.raw('INSERT INTO contact_list (user_id, friend_id, date_added, date_modified) VALUES ((SELECT user_id FROM user_profile WHERE token = %s), NULL, NOW(), NOW())', [token])
-        return {'success': 200}
-    except Exception:
-        return {'error': "Failed to add new user."}
-
 
 
 def getContact(token):
     try:
         user =  Users.objects.get(token=token)
-        print(user.user_id)
+        # print(user.user_id)
         frd = Contact.objects.get(user_id=user.user_id)
-        print(frd.friend_id)
-        jsonObj = { "friend_id" : []}
+        jsonObj = { "contact" : []}
+        # print(frd.friend_id)
         for i in frd.friend_id:
-            jo = {"email": 1}
-            f = Users.objects.get(token=i)
+            jo = {"email": 1, 'name': 1}
+            f = Users.objects.get(user_id=i)
             jo['email'] = f.email
-            jsonObj['friend_id'].append(jo)
-        print(jsonObj)
+            jo['name'] = f.user_name
+            jsonObj['contact'].append(jo)
+        # print(jsonObj)
         return jsonObj
     except Exception as e:
-        print(e)
+        # print(e)
         return {'error': "Failed to get contact."}
 
 #
