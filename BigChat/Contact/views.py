@@ -59,4 +59,23 @@ class Profile(View):
             print(e)
             return JsonResponse({'error': "Failed to get profile"})
 
+    @classmethod
+    def post(self, request):
+        try:
+            token=request.GET.get("token")
+            email = request.GET.get("email")
+            image = request.GET.get("image")
+            name = request.GET.get("name")
+            print(token)
+            user = Users.objects.get(token=token, email=email)
+            user.profile_img = image
+            user.user_name = name
+            user.save()
+
+            json = {"email":email, "name":name, "image":image, "error":''}
+            return JsonResponse(json)
+        except Exception as e:
+            print(e)
+            return JsonResponse({'error': "Failed to change profile"})
+
 #
