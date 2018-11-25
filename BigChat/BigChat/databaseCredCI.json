@@ -3,7 +3,7 @@
          "ENGINE": "django.db.backends.postgresql",
          "NAME": "bigchat",
          "HOST": "localhost",
-         "USER": "bigchat",
+         "USER": "postgres",
          "PASSWORD": ""
      }
 }
