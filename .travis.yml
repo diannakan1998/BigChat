@@ -2,10 +2,15 @@ language: python
 
 python:
       - "3.6"
+services:
+        - postgresql
+before_script:
+        - psql -c 'create database bigchat;' -U bigchat
+        - python3 BigChat/manage.py makemigrations
+        - python3 BigChat/manage.py migrate
 env:
       - DJANGO_VERSION=2.1.2
 install:
       - python3 -m pip install -r BigChat/requirements.txt
 script:
       - python3 BigChat/manage.py test
-
