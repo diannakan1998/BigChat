@@ -5,7 +5,7 @@ python:
 services:
         - postgresql
 before_script:
-        - psql -c 'create database bigchat;' -U bigchat
+        - psql -c 'create database bigchat;' -U postgres
         - python3 BigChat/manage.py makemigrations
         - python3 BigChat/manage.py migrate
 env:
