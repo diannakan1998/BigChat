@@ -14,6 +14,8 @@ class chat(models.Model):
     message_type = models.IntegerField()
     date_added = models.DateTimeField(auto_now=True)
     date_modified = models.DateTimeField(auto_now=True)
+    latitude = models.FloatField(null=True)
+    longitude = models.FloatField(null=True)
 
     class Meta:
         db_table = "chat"

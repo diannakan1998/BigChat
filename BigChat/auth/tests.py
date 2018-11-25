@@ -6,11 +6,18 @@ import json
 from auth.models import Users
 from auth.models import ChatList
 from auth.views import checkForNewUser, findUser, updateToken, addUser, processUpdateTokenRequest, processAuthRequest
+from Contact.models import Profile
 
 
 class UserTestCase(TransactionTestCase):
     def setUp(self):
         Users.objects.create(email="test@email.com", token="Token1")
+
+    # def test(self):
+        # addUser("testing2@email.com", "Token5")
+        # user = Profile.objects.get(email="testing2@email.com")
+        # print(user.profile_img_str)
+        # print("done")
 
     def test_auth_views(self):
 

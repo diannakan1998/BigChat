@@ -12,6 +12,7 @@ from django.views.generic import View
 from auth.models import Users, ChatList
 from .models import chat
 from addFriends.models import chatMember
+from Contact.models import Profile
 # from django.db import connection
 
 
@@ -33,24 +34,41 @@ class MessageHistory(View):
             user = Users.objects.get(token=token)
             # print(user.user_id)
             cl = ChatList.objects.filter(user_id=user.user_id, chat_id=chatId)
+            if len(cl)==0:
+                return JsonResponse({'error': 'User not in this chat'})
+
             for i in cl:
                 i.flag = 0
                 i.save()
+
             c = chat.objects.filter(chat_id=chatId).order_by('-date_added')
             # print(user.user_id)
-            jsonObjRoot = { "messages": [], 'error':''}
+            member = chatMember.objects.get(id=int(i.chat_id[11:])).member_id
+            friend = Users.objects.get(user_id=exclude(user.user_id, member)[0])
+            friendp = Profile.objects.get(email=friend.email)
+            userp = Profile.objects.get(email=user.email)
+            ju = {"email": 0, "name":0, "image":0, 'desc':0}
+            ju['email']=friendp.email
+            ju['name'] = friendp.name
+            ju['image'] = friendp.profile_img_str
+            ju['desc'] =friendp.profile_description
+            jsonObjRoot = { "userData":ju, "messages": [], 'error':''}
             for i in c:
                 juser = {"user_email" :1, "name": 1, "image":0}
-                jsonObj = { "_id": 1, "user" : juser, "message": 1, "media":1,"type": 1, "time": 1}
+                jsonObj = { "_id": 1, "user" : juser, "message": 1, "media":1,"type": 1, "latitude": 0, "longitude":0, "time": 1}
                 jsonObj['_id'] = i.id
-                u = Users.objects.get(user_id=i.user_id)
-                juser['user_email'] = u.email
-                juser['name'] = u.user_name
-                juser['image'] = u.profile_img
+                if i.user_email==user.email:
+                    juser['user_email'] = user.email
+                    juser['name'] = userp.name
+                else:
+                    juser['user_email'] = friend.email
+                    juser['name'] = friendp.name
                 jsonObj['user'] = juser
                 jsonObj['media'] = i.media
                 jsonObj['message'] = i.message
                 jsonObj['type'] = i.message_type
+                jsonObj['latitude'] = i.latitude
+                jsonObj['longitude'] = i.longitude
                 # print(i.date_added.date())
                 # print(str(i.date_added.time())[0:8])
                 # print(datetime.datetime.now().date())
@@ -89,6 +107,8 @@ class MessageHistory(View):
             email = requests.GET.get('email')
         if media is None:
             media = requests.GET.get('media')
+
+        # print (token)
         try:
             user = Users.objects.get(token=token)
             # print(user.chat_list_id)
@@ -124,15 +144,18 @@ class chatlist(View):
                 jsonObj = { "chatId" : 0, "name": 0, "message": 0, "type": 1, "time": 0, "flag": 0, "image":0}
                 member = chatMember.objects.get(id=int(i.chat_id[11:])).member_id
                 friend = Users.objects.get(user_id=exclude(user.user_id, member)[0])
+                friendp = Profile.objects.get(email=friend.email)
                 print(friend.user_id)
                 jsonObj['chatId'] = i.chat_id
                 jsonObj['message'] = i.message
                 jsonObj['type'] = i.message_type
                 jsonObj['time'] = i.date_modified
                 jsonObj['flag'] = i.flag
-                jsonObj['name'] = friend.user_name
-                jsonObj['image'] = friend.profile_img
+                jsonObj['name'] = friendp.name
+                jsonObj['image'] = friendp.profile_img_str
                 jsonObjRoot["chats"].append(jsonObj)
+
+            print(jsonObjRoot)
             return JsonResponse(jsonObjRoot)
         except Exception as e:
             print(e)

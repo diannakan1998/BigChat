@@ -92,7 +92,7 @@ INSTALLED_APPS = [
     'Contact.apps.ContactConfig',
     'chat.apps.ChatConfig',
     'addFriends.apps.AddfriendsConfig',
-    # 'binaryTesting.apps.BinarytestingConfig',
+    'binaryTesting.apps.BinarytestingConfig',
 
 ]
 

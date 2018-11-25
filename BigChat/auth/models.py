@@ -12,6 +12,7 @@ class Users(models.Model):
      chat_list_id = models.TextField(default="")
      user_name = models.TextField(blank=True)
      profile_img = models.TextField(blank=True, null=True)
+     profile_description = models.TextField(blank=True, null=True)
      class Meta:
          db_table = 'myAuth_users'
 

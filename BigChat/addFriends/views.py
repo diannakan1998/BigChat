@@ -30,7 +30,7 @@ class FriendRequests(View):
 
 def getFriendRequests(request):
     token = request.GET.get("token")
-    # print ("GET")
+    print ("GET")
     try:
         # print ("looking for user: " + token)
         user = Users.objects.get(token=token)
@@ -44,7 +44,7 @@ def getFriendRequests(request):
 
         friendRequests_status = {"success": 200, "sent": [], "recieved": []}
 
-        # print (friendRequests)
+        print (friendRequests)
         # print (user)
         if friendRequests.friend_requests_emails_sent is not None:
             for i in friendRequests.friend_requests_emails_sent:
@@ -67,23 +67,30 @@ def friendController(request, requestType):
      email = None
      friendEmail = None
 
-     if requestType is "sendAdd":
-          token = request.POST.get("token")
-          email = request.POST.get("email")
-          friendEmail = request.POST.get("friendEmail")
-     else:
-         try:
-             jsonObj = json.loads(request.body)
-             token = jsonObj['token']
-             email = jsonObj['email']
-             friendEmail = jsonObj['friendEmail']
-         except Exception as e:
-             return {"error" : "Failed to parse data"}
+     token = request.GET.get("token")
+     email = request.GET.get("email")
+     friendEmail = request.GET.get("friendEmail")
+     print (token)
+     print(email)
+     print(friendEmail)
 
-     # print (token)
-     # print(email)
-     # print(friendEmail)
-
+     if token is None:
+         if requestType is "sendAdd":
+              # token = request.POST.get("token")
+              # email = request.POST.get("email")
+              # friendEmail = request.POST.get("friendEmail")
+              token = request.GET.get("token")
+              email = request.GET.get("email")
+              friendEmail = request.GET.get("friendEmail")
+         else:
+             try:
+                 jsonObj = json.loads(request.body)
+                 token = jsonObj['token']
+                 email = jsonObj['email']
+                 friendEmail = jsonObj['friendEmail']
+             except Exception as e:
+                 print(e)
+                 return {"error" : "Failed to parse data"}
      # print ("OTHERS")
 
      try:
@@ -133,6 +140,7 @@ def friendController(request, requestType):
 
                      cm = chatMember.objects.filter(member_id__contains=[user_id, friend_id]).filter(member_id__len=2).order_by('-date_added')[:1]
                      cm = cm[0]
+                     # print(chatmem.id)
                      chatId = "chat_table_" + str(cm.id)
                      # add each other to chatlist
                      chatlist =  ChatList(user_id= user_id, chat_id=chatId, message="New Friend!", message_type=1, flag=1, name=friend.user_name, date_added=datetime.datetime.now(), date_modified=datetime.datetime.now())
@@ -158,7 +166,7 @@ def friendController(request, requestType):
              friend_friendRequests.friend_requests_emails_sent.remove(email)
 
          elif requestType == "sendAdd":
-             # print ("Sending add...")
+             print ("Sending add...")
 
              # print ("Checking if they exist...")
              if not FriendRequest.objects.filter(user_id=user_id).exists():
@@ -194,7 +202,7 @@ def friendController(request, requestType):
 
          return {"success" : 200}
      except Exception as e:
-         # print (e)
+         print (e)
          return {"error" : "Failed to modify contacts"}
 
 def addFriend(contacts, friend_id):

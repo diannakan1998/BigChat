@@ -21,6 +21,6 @@ urlpatterns = [
 	path('auth/', include('auth.urls')),
     path('Contact/', include('Contact.urls')),
     path('chat/', include('chat.urls')),
-    path('addFriends/', include('addFriends.urls'))
-    # path('media/', include('binaryTesting.urls'))
+    path('addFriends/', include('addFriends.urls')),
+    path('media/', include('binaryTesting.urls'))
 ]
