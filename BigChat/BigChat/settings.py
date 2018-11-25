@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 currRelPath = os.path.join(os.getcwd(), "BigChat")
-filePath = os.path.join(currRelPath, "secret_key.json")
+filePath = os.path.join(currRelPath, "secret_keyCI.json")
 secretKey = open(filePath, "r")
 jsonObj = json.load(secretKey)
 SECRET_KEY = jsonObj["SECRET_KEY"]
@@ -35,7 +35,7 @@ DEBUG = True
 
 # SECURITY WARNING Make sure database credentials are secure/hidden
 # For production...
-filePath = os.path.join(currRelPath, "databaseCred.json")
+filePath = os.path.join(currRelPath, "databaseCredCI.json")
 dbCred = open(filePath, "r")
 DATABASES = json.load(dbCred)
 
