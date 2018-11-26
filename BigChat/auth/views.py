@@ -111,10 +111,10 @@ def auth(name, email, app_id, token, authType):
              if 'error' in jsonReq:
                  return jsonReq
 
-             f = open('auth/google_key.json')
+             f = open('auth/google_keyCI.json')
              googleKey = json.load(f)
 
-             f = open('auth/google_key.json.old')
+             f = open('auth/google_keyCI.json.old')
              googleKeyOld = json.load(f)
 
              if 'issued_to' in jsonReq and 'email' in jsonReq and 'KEY' in googleKey and 'KEY' in googleKeyOld:
@@ -167,10 +167,10 @@ def auth(name, email, app_id, token, authType):
                  return {"error": jsonReq_app_id['error']['message'] }
 
              # print ("Test0")
-             f = open('auth/facebook_key.json')
+             f = open('auth/facebook_keyCI.json')
              facebookKey = json.load(f)
 
-             f = open('auth/facebook_key.json.old')
+             f = open('auth/facebook_keyCI.json.old')
              facebookKeyOld = json.load(f)
              # print ("Test1")
              jsonReq['email'] = jsonReq['email'].replace("\u0040", "@")
