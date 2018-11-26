@@ -16,7 +16,7 @@ install:
       - python3 -m pip install codacy-coverage
       - python3 -m pip install coveralls
 script:
-        - ls
+      - ls
       - coverage run --source='.' manage.py test
 after_success: coveralls
 
