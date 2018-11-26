@@ -94,6 +94,8 @@ class MessageHistory(View):
         mtype = requests.POST.get('type')
         email = requests.POST.get('email')
         media = requests.POST.get('media')
+        latitude = requests.POST.get('latitude')
+        longitude = requests.POST.get('longitude')
 
         # print("Here:")
         # print(token)
