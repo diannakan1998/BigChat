@@ -1,0 +1,9 @@
+{
+    "default": {
+         "ENGINE": "django.db.backends.postgresql",
+         "NAME": "bigchat",
+         "HOST": "localhost",
+         "USER": "postgres",
+         "PASSWORD": ""
+     }
+}

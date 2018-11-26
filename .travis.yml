@@ -5,14 +5,18 @@ python:
 services:
         - postgresql
 before_script:
-        - psql -c 'create database bigchat;' -U bigchat
+        - psql -c 'create database bigchat;' -U postgres
         - python3 BigChat/manage.py makemigrations
         - python3 BigChat/manage.py migrate
-
 env:
       - DJANGO_VERSION=2.1.2
 install:
       - python3 -m pip install -r BigChat/requirements.txt
+      - python3 -m pip install psycopg2
 script:
-      - python3 BigChat/manage.py test
+      - python3 BigChat/manage.py test auth
+      - python3 BigChat/manage.py test addFriends
+      - python3 BigChat/manage.py test Contact
+      - python3 BigChat/manage.py test chat
+
 
