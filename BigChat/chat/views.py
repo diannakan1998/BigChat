@@ -25,6 +25,11 @@ def index(request):
 
 class MessageHistory(View):
 
+    # example return json
+    # { "userData":{"email": 0, "name":0, "image":0, 'desc':0}, "messages": [
+    # { "_id": 1, "user" : {"user_email" :1, "name": 1, "image":0}, "message": 1, "media":1,"type": 1, "latitude": 0, "longitude":0, "time": 1}
+    # ], 'error':''}
+    
     @classmethod
     def get(self, requests):
         chatId = requests.GET.get('chatId')
@@ -33,6 +38,7 @@ class MessageHistory(View):
             # print(token)
             user = Users.objects.get(token=token)
             # print(user.user_id)
+            # checking if user is in this chat
             cl = ChatList.objects.filter(user_id=user.user_id, chat_id=chatId)
             if len(cl)==0:
                 return JsonResponse({'error': 'User not in this chat'})
@@ -43,6 +49,7 @@ class MessageHistory(View):
 
             c = chat.objects.filter(chat_id=chatId).order_by('-date_added')
             # print(user.user_id)
+            # rendering user info
             member = chatMember.objects.get(id=i.chat_id[11:]).member_id
             friend = Users.objects.get(user_id=exclude(user.user_id, member)[0])
             friendp = Profile.objects.get(email=friend.email)
@@ -85,6 +92,8 @@ class MessageHistory(View):
             print(e)
             return JsonResponse({'error' : 'chat error'})
 
+# send message and store in database
+# example request chat/MessageHistory/?message=ss&token=token1&chatId=2&type+1&email=ddd@email&media=img&latitude=12&longitude=13
     @classmethod
     def post(self, requests):
         # print(requests.json())
@@ -104,6 +113,8 @@ class MessageHistory(View):
             message = requests.GET.get('message')
         if token is None:
             token = requests.GET.get('token')
+            latitude = requests.GET.get('latitude')
+            longitude=requests.GET.get('longitude')
         if chatId is None:
             chatId = requests.GET.get('chatId')
         if mtype is None:
@@ -123,6 +134,8 @@ class MessageHistory(View):
                 mtype = jsonObj['type']
                 email = jsonObj['email']
                 media = jsonObj['media']
+                latitude = jsonObj['latitude']
+                longitude = jsonObj['longitude']
             except Exception as e:
                 print(e)
                 return {"error" : "Failed to parse data"}
@@ -140,33 +153,35 @@ class MessageHistory(View):
                 i.date_modified=datetime.datetime.now()
                 i.save()
 
-            msgn = chat(chat_id=chatId, user_name=user.user_name, user_email=email, message=message, message_type=mtype, media=media, user_id=user.user_id)
+            msgn = chat(chat_id=chatId, user_name=user.user_name, user_email=email, message=message, message_type=mtype, media=media, user_id=user.user_id, latitude=latitude, longitude=longitude)
             msgn.save()
             return JsonResponse({'success' : 'send success', 'error':''})
         except Exception as e:
             print(e)
             return JsonResponse({'error' : 'chat error'})
 
-
+# snap chat deleting 
     @classmethod
     def put(self, requests):
         _id = requests.GET.get('_id')
         token = requests.GET.get('token')
-        chatId = requests.GET.get('chatId')
+        # chatId = requests.GET.get('chatId')
 
         if _id is None:
             jsonObj = json.loads(requests.body)
             token = jsonObj['token']
             _id = jsonObj['_id']
-            chatId = jsonObj['chatId']
+            # chatId = jsonObj['chatId']
 
         # print(token)
         # print(_id)
 
         try:
             user = Users.objects.get(token=token)
-            if user.user_id in chatMember.objects.get(id=chatId[11:]).member_id:
-                chat.objects.get(id=_id).delete()
+            msg = chat.objects.get(id=_id)
+            # checking if user is in this chat
+            if user.user_id in chatMember.objects.get(id=msg.chat_id[11:]).member_id:
+                msg.delete()
                 return JsonResponse({'success': 'delete success'})
             else:
                 return JsonResponse({'error': 'user not in this chat'})
@@ -176,6 +191,8 @@ class MessageHistory(View):
 
 
 
+# example return 
+# { "chats": [{ "chatId" : 0, "name": 0, "message": 0, "type": 1, "time": 0, "flag": 0, "image":0}],'error':''}
 class chatlist(View):
 
     @classmethod

@@ -36,6 +36,7 @@ class chatTest(TransactionTestCase):
 
 	def testGetMessages(self):	
 		print("Chat Test:")
+		# check chatlist and flag
 		cm = chatMember.objects.all()[0]
 		c = Client()
 		res = c.get('/chat/chatlist/', {'token':'Test1'})
@@ -112,6 +113,8 @@ class chatTest(TransactionTestCase):
 
 	def testSnapDel(self):
 		print("Snap Delete Test:")
+
+		# success case
 		cm = chatMember.objects.all()[0]
 		# print(cm.id)
 		msg = chat.objects.get(chat_id='chat_table_'+str(cm.id), user_email='testemail1', message='img', message_type=6)
@@ -126,13 +129,28 @@ class chatTest(TransactionTestCase):
 		self.assertEqual(data['success'], 'delete success')
 		print("Test 1 Status: Passed")
 
+
+		# query not found case
+		c = Client()
+		data= {'token': 'Test1', 'chatId': 'chat_table_'+str(cm.id),'_id':msg.id}
+		res = c.put('/chat/MessageHistory/', json.dumps(data), "application/json")
+		data=res.json()
+
+		self.assertEqual(data['error'], 'delete error')
+		print("Test 2 Status: Passed")
+
+
+		# user not in this chat case
+		user3 = Users.objects.get(token='Test5')
+		msg = chat.objects.create(chat_id='chat_table_'+str(cm.id), user_id=user3.user_id, user_email='testemail5', message='img2', message_type=6)	
 		c = Client()
 		data= {'token': 'Test5', 'chatId': 'chat_table_'+str(cm.id),'_id':msg.id}
 		res = c.put('/chat/MessageHistory/', json.dumps(data), "application/json")
 		data=res.json()
 
 		self.assertEqual(data['error'], 'user not in this chat')
-		print("Test 2 Status: Passed")
+		print("Test 3 Status: Passed")
+
 		print("All Snap Test Passed")
 
 
