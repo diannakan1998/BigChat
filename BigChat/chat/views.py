@@ -49,9 +49,10 @@ class MessageHistory(View):
             if user.user_id in chatMember.objects.get(id=msg.chat_id[11:]).member_id:
                 msg.delete()
                 cl = ChatList.objects.get(user_id=user.user_id, chat_id=chatId)
-                i.flag = 0
-                i.message = 'Snap Viewed'
-                i.save()
+                cl.flag = 0
+                cl.message = '[Snap Viewed]'
+                cl.save()
+                # print(i.message)
 
                 return JsonResponse({'success': 'delete success'})
             else:
@@ -179,18 +180,23 @@ class MessageHistory(View):
 
         try:
             user = Users.objects.get(token=token)
-            # print(user.chat_list_id)
+            print(chatId)
             cl = ChatList.objects.filter(chat_id=chatId)
+
             for i in cl:
+
                 i.message=message
                 i.message_type=mtype
                 i.flag=1
                 i.email=email
                 i.date_modified=datetime.datetime.now()
                 i.save()
+                print(i.message)
+
 
             msgn = chat(chat_id=chatId, user_name=user.user_name, user_email=email, message=message, message_type=mtype, media=media, user_id=user.user_id, latitude=latitude, longitude=longitude)
             msgn.save()
+
             return JsonResponse({'success' : 'send success', 'error':''})
         except Exception as e:
             print(e)
