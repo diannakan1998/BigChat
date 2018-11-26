@@ -3,7 +3,7 @@
 # Create your views here.
 # import requests
 # import json
-import datetime
+import datetime, json
 
 
 from django.http import HttpResponse, JsonResponse
@@ -43,7 +43,7 @@ class MessageHistory(View):
 
             c = chat.objects.filter(chat_id=chatId).order_by('-date_added')
             # print(user.user_id)
-            member = chatMember.objects.get(id=int(i.chat_id[11:])).member_id
+            member = chatMember.objects.get(id=i.chat_id[11:]).member_id
             friend = Users.objects.get(user_id=exclude(user.user_id, member)[0])
             friendp = Profile.objects.get(email=friend.email)
             userp = Profile.objects.get(email=user.email)
@@ -95,6 +95,9 @@ class MessageHistory(View):
         email = requests.POST.get('email')
         media = requests.POST.get('media')
 
+        # print("Here:")
+        # print(token)
+
         if message is None:
             message = requests.GET.get('message')
         if token is None:
@@ -108,7 +111,21 @@ class MessageHistory(View):
         if media is None:
             media = requests.GET.get('media')
 
-        # print (token)
+        if token is None:
+            try:
+                jsonObj = json.loads(requests.body)
+                token = jsonObj['token']
+                message = jsonObj['message']
+                token = jsonObj['token']
+                chatId = jsonObj['chatId']
+                mtype = jsonObj['type']
+                email = jsonObj['email']
+                media = jsonObj['media']
+            except Exception as e:
+                print(e)
+                return {"error" : "Failed to parse data"}
+
+
         try:
             user = Users.objects.get(token=token)
             # print(user.chat_list_id)
@@ -129,6 +146,34 @@ class MessageHistory(View):
             return JsonResponse({'error' : 'chat error'})
 
 
+    @classmethod
+    def put(self, requests):
+        _id = requests.GET.get('_id')
+        token = requests.GET.get('token')
+        chatId = requests.GET.get('chatId')
+
+        if _id is None:
+            jsonObj = json.loads(requests.body)
+            token = jsonObj['token']
+            _id = jsonObj['_id']
+            chatId = jsonObj['chatId']
+
+        # print(token)
+        # print(_id)
+
+        try:
+            user = Users.objects.get(token=token)
+            if user.user_id in chatMember.objects.get(id=chatId[11:]).member_id:
+                chat.objects.get(id=_id).delete()
+                return JsonResponse({'success': 'delete success'})
+            else:
+                return JsonResponse({'error': 'user not in this chat'})
+        except Exception as e:
+            print(e)
+            return JsonResponse({'error': 'delete error'})
+
+
+
 class chatlist(View):
 
     @classmethod
@@ -138,14 +183,12 @@ class chatlist(View):
         try:
             user = Users.objects.get(token=token)
             cl = ChatList.objects.filter(user_id=user.user_id).order_by('-date_modified')
-            # print(cl)
             jsonObjRoot = { "chats": [],'error':''}
             for i in cl:
                 jsonObj = { "chatId" : 0, "name": 0, "message": 0, "type": 1, "time": 0, "flag": 0, "image":0}
-                member = chatMember.objects.get(id=int(i.chat_id[11:])).member_id
+                member = chatMember.objects.get(id=i.chat_id[11:]).member_id
                 friend = Users.objects.get(user_id=exclude(user.user_id, member)[0])
                 friendp = Profile.objects.get(email=friend.email)
-                print(friend.user_id)
                 jsonObj['chatId'] = i.chat_id
                 jsonObj['message'] = i.message
                 jsonObj['type'] = i.message_type
@@ -155,11 +198,11 @@ class chatlist(View):
                 jsonObj['image'] = friendp.profile_img_str
                 jsonObjRoot["chats"].append(jsonObj)
 
-            print(jsonObjRoot)
+            # print(jsonObjRoot)
             return JsonResponse(jsonObjRoot)
         except Exception as e:
             print(e)
-            return JsonResponse({'error' : 'chatlist error'})
+            return JsonResponse({"error" : "chatlist error"})
 
 
 

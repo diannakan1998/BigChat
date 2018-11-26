@@ -29,7 +29,7 @@ class UserTestCase(TransactionTestCase):
         print("Test 2 Status: Passed")
 
         # Testing addUser
-        self.assertEqual(addUser("testing@email.com", "Token5"), {'success': "Succesfully added new user"})
+        self.assertEqual(addUser("testing@email.com", "Token5"), {'success': "Succesfully added new user","newUser": 1})
         print("Test 3 Status: Passed")
         self.assertEqual(addUser("testingemail.com", "Token5"), {'error': "Failed to add user."})
         print("Test 4 Status: Passed")
@@ -41,9 +41,9 @@ class UserTestCase(TransactionTestCase):
         print("Test 6 Status: Passed")
 
         # Testing Check for new users
-        self.assertEqual(checkForNewUser("test@email.com", "Token1"), {'success': 'user exists', 'newUser': 'false'})
+        self.assertEqual(checkForNewUser("test@email.com", "Token1"), {'success': 'user exists', 'newUser': 0})
         print("Test 7 Status: Passed")
-        self.assertEqual(checkForNewUser("test2@email.com", "Token2"), {'success': "Succesfully added new user"})
+        self.assertEqual(checkForNewUser("test2@email.com", "Token2"), {'success': "Succesfully added new user","newUser": 1})
         print("Test 8 Status: Passed")
 
         # Testing REST APIs (Should fail...)

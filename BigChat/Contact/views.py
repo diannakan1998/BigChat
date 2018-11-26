@@ -50,9 +50,10 @@ class profile(View):
 
     @classmethod
     def get(self, request):
+        email = request.GET.get("email")
+        # print(email)
         try:
-            email = request.GET.get("email")
-            print(email)
+
             user = Profile.objects.get(email=email)
             json = {"email":0, "name":0, "image":0, "desc":0,"error":''}
             json['email'] = user.email
@@ -81,8 +82,8 @@ class profile(View):
                 name = request.POST.get("name")
                 desc = request.POST.get("desc")
 
-            # print(token)
-            # print(Users.objects.get(email='austinhe1998@gmail.com').token)
+            # print(email)
+            #print(Users.objects.get(email='austinhe1998@gmail.com').token)
 
             if email==Users.objects.get(token=token).email:
                 user = Profile.objects.filter(email=email)
@@ -90,17 +91,27 @@ class profile(View):
                     newu= Profile(email=email, name=name, profile_img_str=image, profile_description=desc)
                     newu.save()
                 else:
-                	print(user[0].email)
-                	user[0].profile_img_str = image
-	                user[0].name = name
-	                user[0].profile_description = desc
-	                user[0].save()
-                json = {"email":email, "name":name, "image":image, "desc":desc, "error":''}
+                	
+                    # print(len(image))
+
+                    if len(image) >1:
+                        # print("changed")
+                        user[0].profile_img_str = image
+                        user[0].save()
+                    if name is not None:
+                        user[0].name = name
+                        user[0].save()
+                    if desc is not None:
+                        user[0].profile_description = desc
+                        user[0].save()
+	                
+                    # print(user[0].profile_img_str)
+                # print("reached")
+                return JsonResponse({"email":email, "name":name, "image":image, "desc":desc, "error":''})
             else:
-                json={"error":'Cannot change other people\'s profile'}
+                return JsonResponse({'error':'Cannot change other peoples profile'})
             # print(json)
 
-            return JsonResponse(json)
         except Exception as e:
             print(e)
             return JsonResponse({'error': "Failed to change profile"})

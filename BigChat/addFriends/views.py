@@ -30,7 +30,7 @@ class FriendRequests(View):
 
 def getFriendRequests(request):
     token = request.GET.get("token")
-    print ("GET")
+    # print ("GET")
     try:
         # print ("looking for user: " + token)
         user = Users.objects.get(token=token)
@@ -44,7 +44,7 @@ def getFriendRequests(request):
 
         friendRequests_status = {"success": 200, "sent": [], "recieved": []}
 
-        print (friendRequests)
+        # print (friendRequests)
         # print (user)
         if friendRequests.friend_requests_emails_sent is not None:
             for i in friendRequests.friend_requests_emails_sent:
@@ -70,18 +70,15 @@ def friendController(request, requestType):
      token = request.GET.get("token")
      email = request.GET.get("email")
      friendEmail = request.GET.get("friendEmail")
-     print (token)
-     print(email)
-     print(friendEmail)
 
      if token is None:
          if requestType is "sendAdd":
-              # token = request.POST.get("token")
-              # email = request.POST.get("email")
-              # friendEmail = request.POST.get("friendEmail")
-              token = request.GET.get("token")
-              email = request.GET.get("email")
-              friendEmail = request.GET.get("friendEmail")
+              token = request.POST.get("token")
+              email = request.POST.get("email")
+              friendEmail = request.POST.get("friendEmail")
+              # token = request.GET.get("token")
+              # email = request.GET.get("email")
+              # friendEmail = request.GET.get("friendEmail")
          else:
              try:
                  jsonObj = json.loads(request.body)
@@ -92,7 +89,10 @@ def friendController(request, requestType):
                  print(e)
                  return {"error" : "Failed to parse data"}
      # print ("OTHERS")
-
+     # print (token)
+     # print(email)
+     # print(friendEmail)
+     
      try:
          # print ("Inside TRY")
          user = Users.objects.get(email=email, token=token)
@@ -166,7 +166,7 @@ def friendController(request, requestType):
              friend_friendRequests.friend_requests_emails_sent.remove(email)
 
          elif requestType == "sendAdd":
-             print ("Sending add...")
+             # print ("Sending add...")
 
              # print ("Checking if they exist...")
              if not FriendRequest.objects.filter(user_id=user_id).exists():
