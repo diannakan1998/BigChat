@@ -13,9 +13,11 @@ class chatTest(TransactionTestCase):
 		print("Chat Test: setup")
 		Users.objects.create(token='Test1', email='testemail1')
 		Users.objects.create(token='Test2', email='testemail2')
+		Users.objects.create(token='Test5', email='testemail5')
 
 		user = Users.objects.get(token='Test1')
 		user2 = Users.objects.get(token='Test2')
+		user3 = Users.objects.get(token='Test5')
 
 		chatMember.objects.create(member_id=[user.user_id,user2.user_id], date_added=datetime.datetime.now(), date_modified=datetime.datetime.now())
 		cm = chatMember.objects.all()[0]
@@ -123,6 +125,14 @@ class chatTest(TransactionTestCase):
 		self.assertEqual(len(msga),0)
 		self.assertEqual(data['success'], 'delete success')
 		print("Test 1 Status: Passed")
+
+		c = Client()
+		data= {'token': 'Test5', 'chatId': 'chat_table_'+str(cm.id),'_id':msg.id}
+		res = c.put('/chat/MessageHistory/', json.dumps(data), "application/json")
+		data=res.json()
+
+		self.assertEqual(data['error'], 'user not in this chat')
+		print("Test 2 Status: Passed")
 		print("All Snap Test Passed")
 
 
