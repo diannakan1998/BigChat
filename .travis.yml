@@ -13,7 +13,7 @@ env:
 install:
       - python3 -m pip install -r BigChat/requirements.txt
       - python3 -m pip install psycopg2
-      - python3 -m pip install python-codacy-coverage
+      - python3 -m pip install codacy-coverage
       - python3 -m pip install coveralls
 script:
       - coverage run --source='./BigChat/' manage.py test
