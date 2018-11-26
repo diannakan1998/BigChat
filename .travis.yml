@@ -16,8 +16,6 @@ install:
       - python3 -m pip install codacy-coverage
       - python3 -m pip install coveralls
 script:
-      - ls
-      - coverage run --source='./BigChat' manage.py test
+      - coverage run --source='.' BigChat/manage.py test
 after_success: coveralls
-
 
